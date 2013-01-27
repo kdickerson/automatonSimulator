@@ -1,29 +1,8 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <link rel="Stylesheet" href="/css/smoothness/jquery-ui-1.10.0.custom.min.css" />
-    <style>
-      #tools {
-        position: absolute;
-        width: 150px;
-      }
-      
-      #machineGraph {
-        margin-left: 155px;
-        width: 500px;
-        height: 400px;
-        border: 1px solid #aaa;
-      }
-      
-      .state {
-        background-color: #aaa;
-        width: 30px;
-        height: 30px;
-        line-height: 25px;
-        text-align: center;
-        border-radius: 15px;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/dfa_ui.css" />
   </head>
   
   <body>
@@ -48,6 +27,27 @@
       $(function() {
         jsPlumb.Defaults.Container = $('#machineGraph');
         dfa_ui.setGraphContainer($('#machineGraph'));
+        
+        jsPlumb.importDefaults({
+          Endpoint : ["Dot", {radius:2}],
+          HoverPaintStyle : {strokeStyle:"#42a62c", lineWidth:2},
+          ConnectionOverlays : [
+            ["Arrow", {
+              location: 1,
+              id: "arrow",
+              length: 14,
+              foldback: 0.8
+              }],
+            ["Label", {label:"FOO", id:"label"}]
+          ]
+        });
+        
+        jsPlumb.bind("click", jsPlumb.detach);
+         
+        jsPlumb.bind("connection", function(info) {
+          info.connection.setPaintStyle({strokeStyle:"#0a0"});
+          info.connection.getOverlay("label").setLabel(info.connection.id);
+        });
       });
     </script>
   </body>
