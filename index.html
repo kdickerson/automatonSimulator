@@ -9,7 +9,11 @@
     <div id="tools">
       <button onclick="dfa_ui.addState();">Add State</button>
     </div>
-    <div id="machineGraph"></div>
+    <div id="machineGraph">
+      <div id="startCloud" class="state">Start
+        <div class="plumbSource">&nbsp;</div>
+      </div>
+    </div>
     <div>
       Docs:
       <ul>
@@ -23,33 +27,5 @@
     <script src="js/jquery.jsPlumb-1.3.16-all-min.js"></script>
     <script src="js/DFA.js"></script>
     <script src="js/dfa_ui.js"></script>
-    <script>
-      $(function() {
-        jsPlumb.Defaults.Container = $('#machineGraph');
-        dfa_ui.setGraphContainer($('#machineGraph'));
-        
-        jsPlumb.importDefaults({
-          ConnectorZIndex: 5,
-          Endpoint : ["Dot", {radius:2}],
-          HoverPaintStyle : {strokeStyle:"#42a62c", lineWidth:2},
-          ConnectionOverlays : [
-            ["Arrow", {
-              location: 1,
-              id: "arrow",
-              length: 14,
-              foldback: 0.8
-              }],
-            ["Label", {label:"FOO", id:"label"}]
-          ]
-        });
-        
-        jsPlumb.bind("click", jsPlumb.detach);
-         
-        jsPlumb.bind("connection", function(info) {
-          info.connection.setPaintStyle({strokeStyle:"#0a0"});
-          info.connection.getOverlay("label").setLabel(info.connection.id);
-        });
-      });
-    </script>
   </body>
 </html>

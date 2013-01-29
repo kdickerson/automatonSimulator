@@ -11,18 +11,25 @@
   position: relative;
 }
 
+#startCloud {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  cursor: default;
+}
+
 div.state {
   position: absolute;
   width: 80px;
   height: 40px;
   background-color: #add;
   line-height: 40px;
-  text-align: center;
+  padding-left: 5px;
   cursor: move;
   border-radius: 15px;
 }
 
-div.transitionStartPoint {
+div.plumbSource {
   position: absolute;
   width: 20px;
   height: 20px;

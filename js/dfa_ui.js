@@ -4,9 +4,61 @@ var dfa_ui = (function() {
   var container = null;
   var stateCounter = 0;
   
+  var domReadyInit = function() {
+    jsPlumb.Defaults.Container = $('#machineGraph');
+    dfa_ui.setGraphContainer($('#machineGraph'));
+    
+    jsPlumb.importDefaults({
+      ConnectorZIndex: 5,
+      Endpoint : ["Dot", {radius:2}],
+      HoverPaintStyle : {strokeStyle:"#42a62c", lineWidth:2},
+      ConnectionOverlays : [
+        ["Arrow", {
+          location: 1,
+          id: "arrow",
+          length: 14,
+          foldback: 0.8
+          }],
+        ["Label", {label:"FOO", id:"label"}]
+      ]
+    });
+    
+    jsPlumb.bind("click", jsPlumb.detach); // Delete connections on click
+     
+    // When a new connection is made do this:
+    jsPlumb.bind("connection", function(info) {
+      info.connection.setPaintStyle({strokeStyle:"#0a0"});
+      info.connection.getOverlay("label").setLabel(info.connection.id);
+    });
+    
+    // Setup the Start Fake-State
+    makeStatePlumbing($('#startCloud'));
+  };
+  
+  var makeStatePlumbing = function(state) {
+    var source = state.find('.plumbSource');
+    jsPlumb.makeSource(source, {
+      parent: state,
+      anchor: "Continuous",
+      connector: ["StateMachine", {curviness:20}],
+      connectorStyle: {strokeStyle:"#00a", lineWidth:2},
+      maxConnections: 5,
+      onMaxConnections:function(info, e) {
+        alert("Maximum connections (" + info.maxConnections + ") reached");
+      }
+    });
+
+    jsPlumb.makeTarget(state, {
+      dropOptions: {hoverClass: "dragHover"},
+      anchor: "Continuous"	
+    });
+  };
+  
   return {
     init: function() {
-      return (self = this);
+      self = this;
+      $(domReadyInit);
+      return self;
     },
     
     setDFA: function(newDFA) {
@@ -22,26 +74,11 @@ var dfa_ui = (function() {
     addState: function() {
       // Add state to UI
       var stateId = 's' + stateCounter++;
-      var state = $('<div id="' + stateId + '" class="state">' + stateId + '</div>');
-      var tsp = $('<div class="transitionStartPoint">&nbsp;</div>');
+      var state = $('<div id="' + stateId + '" class="state">' + stateId + '<div class="plumbSource">&nbsp;</div></div>');
       
-      container.append(state.append(tsp));
+      container.append(state);
       jsPlumb.draggable(state, {containment:"parent"});
-      jsPlumb.makeSource(tsp, {
-        parent: state,	
-        anchor: "Continuous",
-        connector: ["StateMachine", {curviness:20}],
-        connectorStyle: {strokeStyle:"#00a", lineWidth:2},
-        maxConnections: 5,
-        onMaxConnections:function(info, e) {
-          alert("Maximum connections (" + info.maxConnections + ") reached");
-        }
-      });
-
-      jsPlumb.makeTarget(state, {
-        dropOptions: {hoverClass: "dragHover"},
-        anchor: "Continuous"	
-      });
+      makeStatePlumbing(state);
       // Do nothing to model
       return self;
     },
@@ -65,3 +102,4 @@ var dfa_ui = (function() {
     }
   };
 })().init();
+
