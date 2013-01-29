@@ -27,21 +27,21 @@ var dfa_ui = (function() {
       
       container.append(state.append(tsp));
       jsPlumb.draggable(state, {containment:"parent"});
-      /*jsPlumb.makeSource(tsp, {
+      jsPlumb.makeSource(tsp, {
         parent: state,	
         anchor: "Continuous",
         connector: ["StateMachine", {curviness:20}],
-        connectorStyle: {strokeStyle:"#00a)", lineWidth:2},
+        connectorStyle: {strokeStyle:"#00a", lineWidth:2},
         maxConnections: 5,
         onMaxConnections:function(info, e) {
           alert("Maximum connections (" + info.maxConnections + ") reached");
         }
-      });*/
+      });
 
-      /*jsPlumb.makeTarget(state, {
+      jsPlumb.makeTarget(state, {
         dropOptions: {hoverClass: "dragHover"},
         anchor: "Continuous"	
-      });*/
+      });
       // Do nothing to model
       return self;
     },
