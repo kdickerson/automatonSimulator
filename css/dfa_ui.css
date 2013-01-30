@@ -5,17 +5,25 @@
 
 #machineGraph {
   margin-left: 155px;
-  width: 500px;
+  width: 800px;
   height: 400px;
   border: 1px solid #aaa;
   position: relative;
 }
 
-#startCloud {
+#start {
   position: absolute;
   top: 50%;
   left: 0;
   cursor: default;
+}
+
+#accept {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  cursor: default;
+  text-align: center;
 }
 
 div.state {

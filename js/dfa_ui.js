@@ -4,6 +4,25 @@ var dfa_ui = (function() {
   var container = null;
   var stateCounter = 0;
   
+  var connectionClicked = function(connection) {
+    // TODO: Change this to edit the transition?
+    jsPlumb.detach(connection);
+  };
+  
+  var connectionAdded = function(info) {
+    var inputChar = prompt('Read what input character on transition?', 'A');
+    if (inputChar === null) {
+      jsPlumb.detach(info.connection);
+      return;
+    }
+    if (inputChar.length > 1) {
+      inputChar = inputChar[0]; // Only accept single character
+    }
+    info.connection.setPaintStyle({strokeStyle:"#0a0"});
+    info.connection.getOverlay("label").setLabel(inputChar);
+    dfa.addTransition(info.sourceId, inputChar, info.targetId);
+  };
+  
   var domReadyInit = function() {
     jsPlumb.Defaults.Container = $('#machineGraph');
     dfa_ui.setGraphContainer($('#machineGraph'));
@@ -23,16 +42,16 @@ var dfa_ui = (function() {
       ]
     });
     
-    jsPlumb.bind("click", jsPlumb.detach); // Delete connections on click
-     
-    // When a new connection is made do this:
-    jsPlumb.bind("connection", function(info) {
-      info.connection.setPaintStyle({strokeStyle:"#0a0"});
-      info.connection.getOverlay("label").setLabel(info.connection.id);
-    });
+    jsPlumb.bind("click", connectionClicked);
+    jsPlumb.bind("jsPlumbConnection", connectionAdded);
     
-    // Setup the Start Fake-State
-    makeStatePlumbing($('#startCloud'));
+    // Setup the Start State
+    makeStatePlumbing($('#start'));
+    // Setup the Accept State
+    jsPlumb.makeTarget($('#accept'), {
+      dropOptions: {hoverClass: "dragHover"},
+      anchor: "Continuous"
+    });
   };
   
   var makeStatePlumbing = function(state) {
@@ -50,13 +69,14 @@ var dfa_ui = (function() {
 
     jsPlumb.makeTarget(state, {
       dropOptions: {hoverClass: "dragHover"},
-      anchor: "Continuous"	
+      anchor: "Continuous"
     });
   };
   
   return {
     init: function() {
       self = this;
+      dfa = new DFA(true);
       $(domReadyInit);
       return self;
     },
@@ -89,16 +109,8 @@ var dfa_ui = (function() {
       return self;
     },
     
-    addTransition: function(state1, character, state2) {
-      // Add transition to UI
-      // Add transition to model
-      return self;
-    },
-    
-    removeTransition: function(state, character) {
-      // Remove transition from UI
-      // Remove transition from model
-      return self;
+    test: function(input) {
+      $('#testResult').html(dfa.accepts(input) ? 'Accepted' : 'Rejected');
     }
   };
 })().init();

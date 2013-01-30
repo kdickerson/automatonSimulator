@@ -8,11 +8,18 @@
   <body>
     <div id="tools">
       <button onclick="dfa_ui.addState();">Add State</button>
+      <br />
+      <br />
+      <input id="testString" type="text" value="AAA" style="width:50px;" />
+      <button onclick="dfa_ui.test($('#testString').val());">Test</button>
+      <label for="testResult">Result: <span id="testResult"></span></label>
     </div>
     <div id="machineGraph">
-      <div id="startCloud" class="state">Start
+      <div id="start" class="state">Start
         <div class="plumbSource">&nbsp;</div>
       </div>
+      
+      <div id="accept" class="state">Accept</div>
     </div>
     <div>
       Docs:

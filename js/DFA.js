@@ -1,7 +1,7 @@
 function DFA(useDefaults) {
   this.transitions = {};
   this.startState = useDefaults ? 'start' : null;
-  this.endStates = useDefaults ? ['end'] : null;
+  this.endStates = useDefaults ? ['accept'] : null;
   
   this.processor = {
     currentInput: null,
@@ -85,7 +85,7 @@ DFA.runTests = function() {
     .addTransition('start', 'a', 's1')
     .addTransition('s1', 'a', 's2')
     .addTransition('s1', 'c', 'end2')
-    .addTransition('s2', 'b', 'end')
+    .addTransition('s2', 'b', 'accept')
     .addEndState('end2');
 
   assert(myDFA.accepts('aab'), 'Accept aab');
@@ -105,7 +105,7 @@ DFA.runTests = function() {
   assert(!myDFA.accepts('aab'), 'Reject aab');
 
   console.log('Remove end state');
-  myDFA.removeEndState('end');
+  myDFA.removeEndState('accept');
   assert(!myDFA.accepts('ab'), 'Reject ab');
   
   var myDFA_asString = myDFA.saveToString();
