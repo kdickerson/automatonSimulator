@@ -11,16 +11,10 @@
       <br />
       <br />
       <input id="testString" type="text" value="AAA" style="width:50px;" />
-      <button onclick="dfa_ui.test($('#testString').val());">Test</button>
+      <button id="testBtn" onclick="dfa_ui.test($('#testString').val());">Test</button>
       <label for="testResult">Result: <span id="testResult"></span></label>
     </div>
-    <div id="machineGraph">
-      <div id="start" class="state">Start
-        <div class="plumbSource">&nbsp;</div>
-      </div>
-      
-      <div id="accept" class="state">Accept</div>
-    </div>
+    <div id="machineGraph"></div>
     <div>
       Docs:
       <ul>

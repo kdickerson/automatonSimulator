@@ -25,7 +25,7 @@ var dfa_ui = (function() {
   
   var domReadyInit = function() {
     jsPlumb.Defaults.Container = $('#machineGraph');
-    dfa_ui.setGraphContainer($('#machineGraph'));
+    self.setGraphContainer($('#machineGraph'));
     
     jsPlumb.importDefaults({
       ConnectorZIndex: 5,
@@ -45,17 +45,30 @@ var dfa_ui = (function() {
     jsPlumb.bind("click", connectionClicked);
     jsPlumb.bind("jsPlumbConnection", connectionAdded);
     
-    // Setup the Start State
-    makeStatePlumbing($('#start'));
-    // Setup the Accept State
-    jsPlumb.makeTarget($('#accept'), {
-      dropOptions: {hoverClass: "dragHover"},
-      anchor: "Continuous"
+    // Setup handling 'enter' in test string box
+    $('#testString').keyup(function(event) {if (event.which === 13) {$('#testBtn').trigger('click');}});
+    
+    // Setup handling for accept state changes
+    container.on('change', 'input[type="checkbox"].isAccept', function(event) {
+      var cBox = $(this);
+      var stateId = cBox.closest('div.state').attr('id');
+      if (cBox.prop('checked')) {
+        dfa.addAcceptState(stateId);
+      } else {
+        dfa.removeAcceptState(stateId);
+      }
     });
+    
+    // Setup the Start State
+    var startState = makeState('start');
+    container.append(startState);
+    makeStatePlumbing(startState);
+    dfa.setStartState('start');
   };
   
   var makeState = function(stateId) {
     return $('<div id="' + stateId + '" class="state"></div>')
+      .append('<input id="' + stateId+'_isAccept' + '" type="checkbox" class="isAccept" value="true" title="Accept" />')
       .append(stateId)
       .append('<div class="plumbSource">&nbsp;</div>');
   };
@@ -82,7 +95,7 @@ var dfa_ui = (function() {
   return {
     init: function() {
       self = this;
-      dfa = new DFA(true);
+      dfa = new DFA();
       $(domReadyInit);
       return self;
     },
@@ -114,7 +127,9 @@ var dfa_ui = (function() {
     },
     
     test: function(input) {
-      $('#testResult').html(dfa.accepts(input) ? 'Accepted' : 'Rejected');
+      var accepts = dfa.accepts(input);
+      $('#testResult').html(accepts ? 'Accepted' : 'Rejected').effect('highlight', {color: accepts ? '#bfb' : '#fbb'}, 1000);
+      return self;
     }
   };
 })().init();
