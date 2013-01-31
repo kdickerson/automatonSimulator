@@ -54,6 +54,12 @@ var dfa_ui = (function() {
     });
   };
   
+  var makeState = function(stateId) {
+    return $('<div id="' + stateId + '" class="state"></div>')
+      .append(stateId)
+      .append('<div class="plumbSource">&nbsp;</div>');
+  };
+  
   var makeStatePlumbing = function(state) {
     var source = state.find('.plumbSource');
     jsPlumb.makeSource(source, {
@@ -93,9 +99,7 @@ var dfa_ui = (function() {
     
     addState: function() {
       // Add state to UI
-      var stateId = 's' + stateCounter++;
-      var state = $('<div id="' + stateId + '" class="state">' + stateId + '<div class="plumbSource">&nbsp;</div></div>');
-      
+      var state = makeState('s' + stateCounter++);
       container.append(state);
       jsPlumb.draggable(state, {containment:"parent"});
       makeStatePlumbing(state);
