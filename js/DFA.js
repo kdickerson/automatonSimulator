@@ -32,6 +32,18 @@ DFA.prototype.addTransition = function(stateA, character, stateB) {
   this.transitions[stateA][character] = stateB;
   return this;
 };
+
+// Removes all transitions to/from the state
+DFA.prototype.removeTransitions = function(state) {
+  delete this.transitions[state];
+  $.each(transitions, function(stateA, sTrans) {
+    $.each(sTrans, function(char, stateB) {
+      if (stateB === state) {this.removeTransition(stateA, char);}
+    }
+  });
+  return this;
+};
+
 DFA.prototype.removeTransition = function(stateA, character) {
   if (this.transitions[stateA]) {delete this.transitions[stateA][character];}
   return this;
