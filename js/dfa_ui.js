@@ -6,6 +6,7 @@ var dfa_ui = (function() {
   
   var connectionClicked = function(connection) {
     // TODO: Change this to edit the transition?
+    dfa.removeTransition(connection.sourceId, connection.getOverlay("label").getLabel(), connection.targetId);
     jsPlumb.detach(connection);
   };
   
