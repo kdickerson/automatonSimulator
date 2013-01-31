@@ -1,7 +1,7 @@
 function DFA(useDefaults) {
   this.transitions = {};
   this.startState = useDefaults ? 'start' : null;
-  this.acceptStates = useDefaults ? ['accept'] : null;
+  this.acceptStates = useDefaults ? ['accept'] : [];
   
   this.processor = {
     currentInput: null,
