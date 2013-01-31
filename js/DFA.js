@@ -36,10 +36,11 @@ DFA.prototype.addTransition = function(stateA, character, stateB) {
 // Removes all transitions to/from the state
 DFA.prototype.removeTransitions = function(state) {
   delete this.transitions[state];
-  $.each(transitions, function(stateA, sTrans) {
+  var self = this;
+  $.each(self.transitions, function(stateA, sTrans) {
     $.each(sTrans, function(char, stateB) {
-      if (stateB === state) {this.removeTransition(stateA, char);}
-    }
+      if (stateB === state) {self.removeTransition(stateA, char);}
+    });
   });
   return this;
 };
@@ -126,4 +127,16 @@ DFA.runTests = function() {
   assert(!otherDFA.accepts('ab'), 'Loaded DFA rejects ab');
   assert(!otherDFA.accepts(''), 'Loaded DFA rejects [empty string]');
   assert(!otherDFA.accepts('a'), 'Loaded DFA rejects a');
+  
+  myDFA = new DFA(true)
+    .addTransition('start', 'a', 's1')
+    .addTransition('s1', 'b', 's2')
+    .addTransition('s2', 'c', 'start')
+    .addTransition('s1', 'd', 'accept');
+  assert(myDFA.accepts('ad'), 'Accept ad');
+  console.log('Remove transitions to/from s1');
+  myDFA.removeTransitions('s1');
+  assert(!myDFA.accepts('ad'), 'Reject ad');
+  myDFA.addTransition('s1', 'e', 'accept');
+  assert(!myDFA.accepts('ae'), 'Reject ae');
 }
