@@ -54,3 +54,20 @@ input[type="checkbox"].isAccept {
   vertical-align: middle;
 }
 
+div.delete {
+  position: absolute;
+  top: -18px;
+  right: -18px;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  color: #aaa;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+}
+
+div.delete:hover {
+  color: #a00;
+  cursor: pointer;
+}

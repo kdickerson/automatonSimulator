@@ -49,6 +49,16 @@ var dfa_ui = (function() {
     // Setup handling 'enter' in test string box
     $('#testString').keyup(function(event) {if (event.which === 13) {$('#testBtn').trigger('click');}});
     
+    // Setup handling the 'delete' divs on states
+    container.on('mouseover', 'div.state', function(event) {
+      $(this).find('div.delete').show();
+    }).on('mouseout', 'div.state', function(event) {
+      $(this).find('div.delete').hide();
+    });
+    container.on('click', 'div.delete', function(event) {
+      self.removeState($(this).closest('div.state'));
+    });
+    
     // Setup handling for accept state changes
     container.on('change', 'input[type="checkbox"].isAccept', function(event) {
       var cBox = $(this);
@@ -62,6 +72,7 @@ var dfa_ui = (function() {
     
     // Setup the Start State
     var startState = makeState('start');
+    startState.find('div.delete').remove(); // Can't delete start state
     container.append(startState);
     makeStatePlumbing(startState);
     dfa.setStartState('start');
@@ -71,7 +82,8 @@ var dfa_ui = (function() {
     return $('<div id="' + stateId + '" class="state"></div>')
       .append('<input id="' + stateId+'_isAccept' + '" type="checkbox" class="isAccept" value="true" title="Accept" />')
       .append(stateId)
-      .append('<div class="plumbSource">&nbsp;</div>');
+      .append('<div class="plumbSource">&nbsp;</div>')
+      .append('<div class="delete" style="display:none;" title="Delete">X</div>');
   };
   
   var makeStatePlumbing = function(state) {
@@ -122,8 +134,12 @@ var dfa_ui = (function() {
     },
     
     removeState: function(state) {
-      // Remove state from UI
-      // Remove all transitions from model touching this state
+      var stateId = state.attr('id');
+      jsPlumb.select({source:stateId}).detach(); // Remove all connections from UI
+      jsPlumb.select({target:stateId}).detach();
+      state.remove(); // Remove state from UI
+      dfa.removeTransitions(stateId); // Remove all transitions from model touching this state
+      dfa.removeAcceptState(stateId); // Assure no trace is left
       return self;
     },
     
