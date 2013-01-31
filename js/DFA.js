@@ -1,7 +1,7 @@
 function DFA(useDefaults) {
   this.transitions = {};
   this.startState = useDefaults ? 'start' : null;
-  this.endStates = useDefaults ? ['accept'] : null;
+  this.acceptStates = useDefaults ? ['accept'] : null;
   
   this.processor = {
     currentInput: null,
@@ -20,11 +20,11 @@ DFA.prototype.loadFromString = function(JSONdescription) {
   var parsedJSON = JSON.parse(JSONdescription);
   this.transitions = parsedJSON.transitions;
   this.startState = parsedJSON.startState;
-  this.endStates = parsedJSON.endStates;
+  this.acceptStates = parsedJSON.acceptStates;
   return this;
 };
 DFA.prototype.saveToString = function() {
-  return JSON.stringify({transitions:this.transitions, startState:this.startState, endStates:this.endStates});
+  return JSON.stringify({transitions:this.transitions, startState:this.startState, acceptStates:this.acceptStates});
 };
 
 DFA.prototype.addTransition = function(stateA, character, stateB) {
@@ -42,14 +42,14 @@ DFA.prototype.setStartState = function(state) {
   return this;
 };
 
-DFA.prototype.addEndState = function(state) {
-  this.endStates.push(state);
+DFA.prototype.addAcceptState = function(state) {
+  this.acceptStates.push(state);
   return this;
 };
-DFA.prototype.removeEndState = function(state) {
+DFA.prototype.removeAcceptState = function(state) {
   var stateI = -1;
-  if ((stateI = this.endStates.indexOf(state)) >= 0) {
-    this.endStates.splice(stateI, 1);
+  if ((stateI = this.acceptStates.indexOf(state)) >= 0) {
+    this.acceptStates.splice(stateI, 1);
   }
   return this;
 };
@@ -73,7 +73,7 @@ DFA.prototype.stepInit = function(input) {
   return this.processor.status;
 };
 DFA.prototype.step = function() {
-  if (this.processor.inputIndex === this.processor.currentInput.length) {this.processor.status = (this.endStates.indexOf(this.processor.currentState) >= 0 ? 'Accept' : 'Reject');}
+  if (this.processor.inputIndex === this.processor.currentInput.length) {this.processor.status = (this.acceptStates.indexOf(this.processor.currentState) >= 0 ? 'Accept' : 'Reject');}
   else if ((this.processor.currentState = this.transition(this.processor.currentState, this.processor.currentInput.substr(this.processor.inputIndex++, 1))) === null) {this.processor.status = 'Reject';}
   return this.processor.status;
 };
@@ -86,7 +86,7 @@ DFA.runTests = function() {
     .addTransition('s1', 'a', 's2')
     .addTransition('s1', 'c', 'end2')
     .addTransition('s2', 'b', 'accept')
-    .addEndState('end2');
+    .addAcceptState('end2');
 
   assert(myDFA.accepts('aab'), 'Accept aab');
   assert(myDFA.accepts('ac'), 'Accept ac');
@@ -104,8 +104,8 @@ DFA.runTests = function() {
   assert(myDFA.accepts('ab'), 'Accept ab');
   assert(!myDFA.accepts('aab'), 'Reject aab');
 
-  console.log('Remove end state');
-  myDFA.removeEndState('accept');
+  console.log('Remove accept state');
+  myDFA.removeAcceptState('accept');
   assert(!myDFA.accepts('ab'), 'Reject ab');
   
   var myDFA_asString = myDFA.saveToString();
