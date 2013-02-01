@@ -12,7 +12,8 @@ var dfa_ui = (function() {
   
   var connectionAdded = function(info) {
     var inputChar = prompt('Read what input character on transition?', 'A');
-    if (inputChar === null) {
+    if (!inputChar || dfa.hasTransition(info.sourceId, inputChar)) {
+      if (inputChar) {alert(info.sourceId + " already has a transition for " + inputChar);}
       jsPlumb.detach(info.connection);
       return;
     }
