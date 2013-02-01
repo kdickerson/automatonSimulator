@@ -143,8 +143,36 @@ var dfa_ui = (function() {
     },
     
     test: function(input) {
-      var accepts = dfa.accepts(input);
-      $('#testResult').html(accepts ? 'Accepted' : 'Rejected').effect('highlight', {color: accepts ? '#bfb' : '#fbb'}, 1000);
+      if ($.type(input) === 'string') {
+        $('#testResult').html('Testing...')
+        var accepts = dfa.accepts(input);
+        $('#testResult').html(accepts ? 'Accepted' : 'Rejected').effect('highlight', {color: accepts ? '#bfb' : '#fbb'}, 1000);
+      } else {
+        $('#resultConsole').html('');
+        var makePendingEntry = function(input, type) {
+            return $('<div></div>', {'class':'pending', title:'Pending'}).append(type + ': ' + input).appendTo('#resultConsole');
+        };
+        var updateEntry = function(result, entry) {
+          entry.removeClass('pending').addClass(result).attr('title', result).append(' -- ' + result);
+        };
+        $.each(input.accept, function(index, string) {
+          updateEntry((dfa.accepts(string) ? 'Pass' : 'Fail'), makePendingEntry(string, 'Accept'));
+        });
+        $.each(input.reject, function(index, string) {
+          updateEntry((dfa.accepts(string) ? 'Fail' : 'Pass'), makePendingEntry(string, 'Reject'));
+        });
+      }
+      return self;
+    },
+    
+    debug: function(input) {
+      $('#stepBtn').prop('disabled', false);
+      dfa.stepInit(input);
+      return self;
+    },
+    
+    step: function() {
+      dfa.step();
       return self;
     }
   };

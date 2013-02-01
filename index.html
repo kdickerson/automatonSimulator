@@ -7,22 +7,44 @@
   
   <body>
     <div id="tools">
-      <button onclick="dfa_ui.addState();">Add State</button>
+      <div style="text-align:center;">
+        <button onclick="dfa_ui.addState();">Add State</button>
+      </div>
       <br />
-      <br />
-      <input id="testString" type="text" value="AAA" style="width:50px;" />
-      <button id="testBtn" onclick="dfa_ui.test($('#testString').val());">Test</button>
-      <label for="testResult">Result: <span id="testResult"></span></label>
+      <label>Test / Debug:</label>
+      <input id="testString" type="text" value="" /><br />
+      <div style="text-align:center;">
+        <button id="testBtn" onclick="dfa_ui.test($('#testString').val());">Test</button>
+        <button id="debugBtn" onclick="dfa_ui.debug($('#testString').val());">Debug</button>
+        <button id="stepBtn" onclick="dfa_ui.step();" disabled="disabled">Step</button>
+      </div>
+      <div id="testResult">&nbsp;</div>
+      
+      <hr />
+      <label>Accept (one per line):</label>
+      <textarea id="acceptStrings"></textarea>
+      <br /><br />
+      <label>Reject (one per line):</label>
+      <textarea id="rejectStrings"></textarea>
+      
+      <div style="text-align:right;">
+        <button onclick="dfa_ui.test({accept:$('#acceptStrings').val().split('\n'), reject:$('#rejectStrings').val().split('\n')});">Run Tests</button>
+      </div>
+      
+      <div>
+        Docs:
+        <ul>
+          <li><a href="http://jsplumb.org/doc/usage.html">jsPlumb</a></li>
+          <li><a href="http://api.jquery.com/">jQuery</a></li>
+        </ul>
+      </div>
     </div>
-    <div id="machineGraph"></div>
-    <div>
-      Docs:
-      <ul>
-        <li><a href="http://jsplumb.org/doc/usage.html">jsPlumb</a></li>
-        <li><a href="http://api.jquery.com/">jQuery</a></li>
-      </ul>
+    <div id="mainHolder">
+      <div id="machineGraph"></div>
+      <h5 style="margin-top: 2px; margin-bottom: 2px;">Test Results:</h5>
+      <div id="resultConsole"></div>
     </div>
-    
+        
     <script src="js/jquery-1.9.0.min.js"></script>
     <script src="js/jquery-ui-1.10.0.custom.min.js"></script>
     <script src="js/jquery.jsPlumb-1.3.16-all-min.js"></script>

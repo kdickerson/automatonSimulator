@@ -1,73 +1,99 @@
 #tools {
   position: absolute;
-  width: 150px;
+  width: 175px;
 }
 
-label[for="testResult"] {
-  margin-top: 5px;
-  display: block;
-}
+  #testResult {
+    padding: 3px;
+    text-align: center;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-radius: 8px;
+  }
+  
+  #tools input[type="text"], #tools textarea {
+    width: 170px;
+  }
 
-#testResult {
-  border-radius: 8px;
-  padding: 3px;
+#mainHolder {
+  margin-left: 180px;
+  min-width: 500px;
 }
 
 #machineGraph {
-  margin-left: 155px;
-  width: 800px;
   height: 400px;
   border: 1px solid #aaa;
   position: relative;
 }
 
-#start {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  cursor: default;
+  #start {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    cursor: default;
+  }
+
+  div.state {
+    position: absolute;
+    width: 100px;
+    height: 30px;
+    line-height: 30px;
+    background-color: #add;
+    padding-left: 5px;
+    cursor: move;
+    border-radius: 15px;
+  }
+
+    div.plumbSource {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      right: 5px;
+      top: 5px;
+      background-color: #55a;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    input[type="checkbox"].isAccept {
+      vertical-align: middle;
+    }
+
+    div.delete {
+      position: absolute;
+      top: -18px;
+      right: -18px;
+      width: 30px;
+      height: 30px;
+      text-align: center;
+      line-height: 30px;
+      color: #aaa;
+      border: 1px solid #aaa;
+      border-radius: 10px;
+    }
+
+    div.delete:hover {
+      color: #a00;
+      cursor: pointer;
+    }
+
+#resultConsole {
+  max-height: 100px;
 }
 
-div.state {
-  position: absolute;
-  width: 100px;
-  height: 30px;
-  line-height: 30px;
-  background-color: #add;
-  padding-left: 5px;
-  cursor: move;
-  border-radius: 15px;
-}
-
-div.plumbSource {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  right: 5px;
-  top: 5px;
-  background-color: #55a;
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-input[type="checkbox"].isAccept {
-  vertical-align: middle;
-}
-
-div.delete {
-  position: absolute;
-  top: -18px;
-  right: -18px;
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  line-height: 30px;
-  color: #aaa;
-  border: 1px solid #aaa;
-  border-radius: 10px;
-}
-
-div.delete:hover {
-  color: #a00;
-  cursor: pointer;
-}
+  #resultConsole div {
+    font-size: small;
+    padding-left: 5px;
+  }
+  
+  .pending {
+    background-color: #bbf;
+  }
+  
+  .Pass {
+    background-color: #bfb;
+  }
+  
+  .Fail {
+    background-color: #fbb;
+  }
