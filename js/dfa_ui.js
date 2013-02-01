@@ -17,9 +17,7 @@ var dfa_ui = (function() {
       jsPlumb.detach(info.connection);
       return;
     }
-    if (inputChar.length > 1) {
-      inputChar = inputChar[0]; // Only accept single character
-    }
+    inputChar = inputChar[0]; // Only accept single character
     info.connection.setPaintStyle({strokeStyle:"#0a0"});
     info.connection.getOverlay("label").setLabel(inputChar);
     dfa.addTransition(info.sourceId, inputChar, info.targetId);
