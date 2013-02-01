@@ -33,6 +33,11 @@ DFA.prototype.addTransition = function(stateA, character, stateB) {
   return this;
 };
 
+DFA.prototype.hasTransition = function(state, character) {
+  if (this.transitions[state]) {return !!this.transitions[state][character];}
+  return false;
+};
+
 // Removes all transitions to/from the state
 DFA.prototype.removeTransitions = function(state) {
   delete this.transitions[state];
