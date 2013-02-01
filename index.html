@@ -21,27 +21,21 @@
       <div id="testResult">&nbsp;</div>
       
       <hr />
+      <h5 style="text-align:center;">Bulk Testing</h5>
       <label>Accept (one per line):</label>
-      <textarea id="acceptStrings"></textarea>
-      <br /><br />
+      <textarea id="acceptStrings" style="margin-bottom:5px;"></textarea>
+      <br />
       <label>Reject (one per line):</label>
       <textarea id="rejectStrings"></textarea>
       
       <div style="text-align:right;">
         <button onclick="dfa_ui.test({accept:$('#acceptStrings').val().split('\n'), reject:$('#rejectStrings').val().split('\n')});">Run Tests</button>
       </div>
-      
-      <div>
-        Docs:
-        <ul>
-          <li><a href="http://jsplumb.org/doc/usage.html">jsPlumb</a></li>
-          <li><a href="http://api.jquery.com/">jQuery</a></li>
-        </ul>
-      </div>
     </div>
+    
     <div id="mainHolder">
       <div id="machineGraph"></div>
-      <h5 style="margin-top: 2px; margin-bottom: 2px;">Test Results:</h5>
+      <h5>Test Results:</h5>
       <div id="resultConsole"></div>
     </div>
         

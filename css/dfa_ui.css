@@ -1,3 +1,13 @@
+body {
+  font-family: sans-serif;
+}
+
+h5 {
+   margin-top: 2px;
+   margin-bottom: 2px;
+   font-weight: normal;
+}
+
 #tools {
   position: absolute;
   width: 175px;
@@ -14,6 +24,13 @@
   #tools input[type="text"], #tools textarea {
     width: 170px;
   }
+  #tools textarea {
+    height: 145px;
+  }
+  
+  #tools label {
+    font-size: smaller;
+  }
 
 #mainHolder {
   margin-left: 180px;
@@ -21,7 +38,7 @@
 }
 
 #machineGraph {
-  height: 400px;
+  height: 350px;
   border: 1px solid #aaa;
   position: relative;
 }
@@ -78,7 +95,10 @@
     }
 
 #resultConsole {
-  max-height: 100px;
+  height: 180px;
+  border-bottom: 1px solid #aaa;
+  border-left: 1px solid #aaa;
+  overflow: auto;
 }
 
   #resultConsole div {
