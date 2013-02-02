@@ -61,6 +61,10 @@ h5 {
     border-radius: 15px;
   }
 
+    div.current {
+      background-color: #ada;
+    }
+
     div.plumbSource {
       position: absolute;
       width: 20px;

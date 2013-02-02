@@ -166,13 +166,36 @@ var dfa_ui = (function() {
     },
     
     debug: function(input) {
+      if ($('#debugBtn').html() !== 'Debug') {
+        return self.debugStop();
+      }
       $('#stepBtn').prop('disabled', false);
+      $('#debugBtn').html('Stop');
       dfa.stepInit(input);
+      var status = dfa.status();
+      $('.current').removeClass('current');
+      $('#' + status.state).addClass('current');
       return self;
     },
     
-    step: function() {
+    debugStop: function() {
+      $('#stepBtn').prop('disabled', true);
+      $('#debugBtn').html('Debug');
+      $('.current').removeClass('current');
+      return self;
+    },
+    
+    debugStep: function() {
       dfa.step();
+      var status = dfa.status();
+      $('.current').removeClass('current');
+      $('#' + status.state).addClass('current');
+      
+      if (status.status !== 'Active') {
+        $('#testResult').html(status.status === 'Accept' ? 'Accepted' : 'Rejected').effect('highlight', {color: status.status === 'Accept' ? '#bfb' : '#fbb'}, 1000);
+        $('#stepBtn').prop('disabled', true);
+        $('#debugBtn').html('Reset');
+      }
       return self;
     }
   };
