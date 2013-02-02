@@ -83,9 +83,9 @@ var dfa_ui = (function() {
   
   var makeState = function(stateId) {
     return $('<div id="' + stateId + '" class="state"></div>')
-      .append('<input id="' + stateId+'_isAccept' + '" type="checkbox" class="isAccept" value="true" title="Accept" />')
+      .append('<input id="' + stateId+'_isAccept' + '" type="checkbox" class="isAccept" value="true" title="Accept State" />')
       .append(stateId)
-      .append('<div class="plumbSource">&nbsp;</div>')
+      .append('<div class="plumbSource" title="Drag from here to create new transition">&nbsp;</div>')
       .append('<div class="delete" style="display:none;" title="Delete"><img src="images/cross_grey.png" /></div>');
   };
   
