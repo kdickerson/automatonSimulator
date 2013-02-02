@@ -2,10 +2,25 @@ body {
   font-family: sans-serif;
 }
 
+h1 {
+  margin-top: 1px;
+  margin-bottom: 1px;
+  text-align: center;
+  font-size: 14pt;
+  font-weight: normal;
+  letter-spacing: 4px;
+  word-spacing: 75px;
+}
+
 h5 {
-   margin-top: 2px;
-   margin-bottom: 2px;
-   font-weight: normal;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  font-weight: normal;
+  text-align: center;
+}
+
+button img, div.delete img {
+  vertical-align: middle;
 }
 
 #tools {
@@ -38,7 +53,7 @@ h5 {
 }
 
 #machineGraph {
-  height: 350px;
+  height: 330px;
   border: 1px solid #aaa;
   position: relative;
 }
@@ -83,18 +98,17 @@ h5 {
     div.delete {
       position: absolute;
       top: -18px;
-      right: -18px;
-      width: 30px;
-      height: 30px;
+      left: 40px;
+      width: 20px;
+      height: 20px;
+      line-height: 20px; 
       text-align: center;
-      line-height: 30px;
       color: #aaa;
       border: 1px solid #aaa;
-      border-radius: 10px;
+      border-radius: 5px;
     }
 
     div.delete:hover {
-      color: #a00;
       cursor: pointer;
     }
 
@@ -121,3 +135,10 @@ h5 {
   .Fail {
     background-color: #fbb;
   }
+
+#footer {
+  clear: both;
+  font-size: 8pt;
+  text-align: center;
+  margin-top: 2px;
+}

@@ -51,6 +51,10 @@ var dfa_ui = (function() {
     // Setup handling the 'delete' divs on states
     container.on('mouseover', 'div.state', function(event) {
       $(this).find('div.delete').show();
+    }).on('mouseover', 'div.delete', function(event) {
+      $(this).find('img').eq(0).prop('src', 'images/cross.png');
+    }).on('mouseout', 'div.delete', function(event) {
+      $(this).find('img').eq(0).prop('src', 'images/cross_grey.png');
     }).on('mouseout', 'div.state', function(event) {
       $(this).find('div.delete').hide();
     });
@@ -82,7 +86,7 @@ var dfa_ui = (function() {
       .append('<input id="' + stateId+'_isAccept' + '" type="checkbox" class="isAccept" value="true" title="Accept" />')
       .append(stateId)
       .append('<div class="plumbSource">&nbsp;</div>')
-      .append('<div class="delete" style="display:none;" title="Delete">X</div>');
+      .append('<div class="delete" style="display:none;" title="Delete"><img src="images/cross_grey.png" /></div>');
   };
   
   var makeStatePlumbing = function(state) {
@@ -111,7 +115,7 @@ var dfa_ui = (function() {
     
     if (status.status !== 'Active') {
       $('#testResult').html(status.status === 'Accept' ? 'Accepted' : 'Rejected').effect('highlight', {color: status.status === 'Accept' ? '#bfb' : '#fbb'}, 1000);
-      $('#stepBtn').prop('disabled', true);
+      $('#debugBtn').prop('disabled', true).find('img').eq(0).prop('src', 'images/clock_go_grey.png');
     }
   };
   
@@ -177,29 +181,25 @@ var dfa_ui = (function() {
     },
     
     debug: function(input) {
-      if ($('#debugBtn').html() !== 'Debug') {
-        return self.debugStop();
+      if ($('#stopBtn').prop('disabled')) {
+        $('#testResult').html('&nbsp;');
+        $('#addStateBtn').prop('disabled', true);
+        $('#stopBtn').prop('disabled', false).find('img').eq(0).prop('src', 'images/clock_stop.png');;
+        $('#testBtn, #bulkTestBtn').prop('disabled', true).find('img').eq(0).prop('src', 'images/arrow_right_grey.png');;
+        dfa.stepInit(input);
+      } else {
+        dfa.step();
       }
-      $('#testResult').html('&nbsp;');
-      $('#stepBtn').prop('disabled', false);
-      $('#testBtn').prop('disabled', true);
-      $('#debugBtn').html('Stop');
-      dfa.stepInit(input);
       updateUIForDebug();
       return self;
     },
     
     debugStop: function() {
-      $('#stepBtn').prop('disabled', true);
-      $('#testBtn').prop('disabled', false);
-      $('#debugBtn').html('Debug');
+      $('#stopBtn').prop('disabled', true).find('img').eq(0).prop('src', 'images/clock_stop_grey.png');
+      $('#addStateBtn').prop('disabled', false);
+      $('#testBtn, #bulkTestBtn').prop('disabled', false).find('img').eq(0).prop('src', 'images/arrow_right.png');
+      $('#debugBtn').prop('disabled', false).find('img').eq(0).prop('src', 'images/clock_go.png');
       $('.current').removeClass('current');
-      return self;
-    },
-    
-    debugStep: function() {
-      dfa.step();
-      updateUIForDebug();
       return self;
     }
   };
