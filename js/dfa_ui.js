@@ -108,6 +108,11 @@ var dfa_ui = (function() {
     var status = dfa.status();
     $('.current').removeClass('current');
     $('#' + status.state).addClass('current');
+    
+    if (status.status !== 'Active') {
+      $('#testResult').html(status.status === 'Accept' ? 'Accepted' : 'Rejected').effect('highlight', {color: status.status === 'Accept' ? '#bfb' : '#fbb'}, 1000);
+      $('#stepBtn').prop('disabled', true);
+    }
   };
   
   return {
@@ -175,7 +180,9 @@ var dfa_ui = (function() {
       if ($('#debugBtn').html() !== 'Debug') {
         return self.debugStop();
       }
+      $('#testResult').html('&nbsp;');
       $('#stepBtn').prop('disabled', false);
+      $('#testBtn').prop('disabled', true);
       $('#debugBtn').html('Stop');
       dfa.stepInit(input);
       updateUIForDebug();
@@ -184,6 +191,7 @@ var dfa_ui = (function() {
     
     debugStop: function() {
       $('#stepBtn').prop('disabled', true);
+      $('#testBtn').prop('disabled', false);
       $('#debugBtn').html('Debug');
       $('.current').removeClass('current');
       return self;
@@ -192,12 +200,6 @@ var dfa_ui = (function() {
     debugStep: function() {
       dfa.step();
       updateUIForDebug();
-      
-      if (status.status !== 'Active') {
-        $('#testResult').html(status.status === 'Accept' ? 'Accepted' : 'Rejected').effect('highlight', {color: status.status === 'Accept' ? '#bfb' : '#fbb'}, 1000);
-        $('#stepBtn').prop('disabled', true);
-        $('#debugBtn').html('Reset');
-      }
       return self;
     }
   };
