@@ -113,17 +113,19 @@ var dfa_ui = (function() {
     var curSpan = $('<span id="currentInput"></span>').html(status.input.substr(status.inputIndex, 1));
     var futureSpan = $('<span id="futureInput"></span>').html(status.input.substring(status.inputIndex+1));
     
-    $('#dfaStatus').css('left', curState.position().left + 4 + 'px')
-      .css('top', curState.position().top - 25 + 'px')
-      .html('').append(doneSpan).append(curSpan).append(futureSpan);
-      
-    if ($('#dfaStatus').position().top < 0) { // Flip to bottom
-      $('#dfaStatus').css('top', $('#dfaStatus').position().top + curState.outerHeight() + 29 + 'px');
-    }
-    var overscan = $('#dfaStatus').position().left + $('#dfaStatus').outerWidth() + 4 - $('#machineGraph').innerWidth();
-    if (overscan > 0) { // Push inward
-      $('#dfaStatus').css('left', $('#dfaStatus').position().left - overscan + 'px');
-    }
+    if (curState.length > 0) {
+      $('#dfaStatus').css('left', curState.position().left + 4 + 'px')
+        .css('top', curState.position().top - 25 + 'px')
+        .html('').append(doneSpan).append(curSpan).append(futureSpan);
+        
+      if ($('#dfaStatus').position().top < 0) { // Flip to bottom
+        $('#dfaStatus').css('top', $('#dfaStatus').position().top + curState.outerHeight() + 29 + 'px');
+      }
+      var overscan = $('#dfaStatus').position().left + $('#dfaStatus').outerWidth() + 4 - $('#machineGraph').innerWidth();
+      if (overscan > 0) { // Push inward
+        $('#dfaStatus').css('left', $('#dfaStatus').position().left - overscan + 'px');
+      }
+    };
   };
   
   var updateUIForDebug = function() {
