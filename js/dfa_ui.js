@@ -165,7 +165,7 @@ var dfa_ui = (function() {
       } else {
         $('#resultConsole').html('');
         var makePendingEntry = function(input, type) {
-            return $('<div></div>', {'class':'pending', title:'Pending'}).append(type + ': ' + input).appendTo('#resultConsole');
+            return $('<div></div>', {'class':'pending', title:'Pending'}).append(type + ': ' + (input === '' ? '[Empty String]' : input)).appendTo('#resultConsole');
         };
         var updateEntry = function(result, entry) {
           entry.removeClass('pending').addClass(result).attr('title', result).append(' -- ' + result);
