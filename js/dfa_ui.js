@@ -176,6 +176,7 @@ var dfa_ui = (function() {
         $.each(input.reject, function(index, string) {
           updateEntry((dfa.accepts(string) ? 'Fail' : 'Pass'), makePendingEntry(string, 'Reject'));
         });
+        $('#bulkResultHeader').effect('highlight', {color: '#add'}, 1000);
       }
       return self;
     },
@@ -183,7 +184,6 @@ var dfa_ui = (function() {
     debug: function(input) {
       if ($('#stopBtn').prop('disabled')) {
         $('#testResult').html('&nbsp;');
-        $('#addStateBtn').prop('disabled', true);
         $('#stopBtn').prop('disabled', false).find('img').prop('src', 'images/clock_stop.png');;
         $('#testBtn, #bulkTestBtn').prop('disabled', true).find('img').prop('src', 'images/arrow_right_grey.png');;
         dfa.stepInit(input);
@@ -196,7 +196,6 @@ var dfa_ui = (function() {
     
     debugStop: function() {
       $('#stopBtn').prop('disabled', true).find('img').prop('src', 'images/clock_stop_grey.png');
-      $('#addStateBtn').prop('disabled', false);
       $('#testBtn, #bulkTestBtn').prop('disabled', false).find('img').prop('src', 'images/arrow_right.png');
       $('#debugBtn').prop('disabled', false).find('img').prop('src', 'images/clock_go.png');
       $('.current').removeClass('current');

@@ -116,6 +116,7 @@ button img, div.delete img {
     }
 
 #resultConsole {
+  font-size: small;
   height: 180px;
   border-bottom: 1px solid #aaa;
   border-left: 1px solid #aaa;
@@ -123,7 +124,6 @@ button img, div.delete img {
 }
 
   #resultConsole div {
-    font-size: small;
     padding-left: 5px;
   }
   
