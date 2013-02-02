@@ -80,7 +80,12 @@ DFA.prototype.accepts = function(input) {
 };
 
 DFA.prototype.status = function() {
-  return {state:this.processor.currentState, inputIndex:this.processor.inputIndex, nextChar:this.processor.currentInput.substr(this.processor.inputIndex, 1), status:this.processor.status};
+  return {state: this.processor.currentState, 
+    input: this.processor.currentInput,
+    inputIndex: this.processor.inputIndex,
+    nextChar: this.processor.currentInput.substr(this.processor.inputIndex, 1),
+    status: this.processor.status
+  };
 };
 
 DFA.prototype.stepInit = function(input) {
