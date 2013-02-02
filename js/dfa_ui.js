@@ -104,6 +104,12 @@ var dfa_ui = (function() {
     });
   };
   
+  var updateUIForDebug = function() {
+    var status = dfa.status();
+    $('.current').removeClass('current');
+    $('#' + status.state).addClass('current');
+  };
+  
   return {
     init: function() {
       self = this;
@@ -172,9 +178,7 @@ var dfa_ui = (function() {
       $('#stepBtn').prop('disabled', false);
       $('#debugBtn').html('Stop');
       dfa.stepInit(input);
-      var status = dfa.status();
-      $('.current').removeClass('current');
-      $('#' + status.state).addClass('current');
+      updateUIForDebug();
       return self;
     },
     
@@ -187,9 +191,7 @@ var dfa_ui = (function() {
     
     debugStep: function() {
       dfa.step();
-      var status = dfa.status();
-      $('.current').removeClass('current');
-      $('#' + status.state).addClass('current');
+      updateUIForDebug();
       
       if (status.status !== 'Active') {
         $('#testResult').html(status.status === 'Accept' ? 'Accepted' : 'Rejected').effect('highlight', {color: status.status === 'Accept' ? '#bfb' : '#fbb'}, 1000);
