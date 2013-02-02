@@ -73,31 +73,31 @@ DFA.prototype.removeAcceptState = function(state) {
 };
 
 DFA.prototype.accepts = function(input) {
-  this.stepInit(input);
-  var _status;
-  while ((_status = this.step()) !== 'Reject' && _status !== 'Accept') {}
+  var _status = this.stepInit(input);
+  while (_status === 'Active') {_status = this.step();}
   return _status === 'Accept';
 };
 
 DFA.prototype.status = function() {
   return {state: this.processor.currentState, 
-    input: this.processor.currentInput,
+    input: this.processor.input,
     inputIndex: this.processor.inputIndex,
-    nextChar: this.processor.currentInput.substr(this.processor.inputIndex, 1),
+    nextChar: this.processor.input.substr(this.processor.inputIndex, 1),
     status: this.processor.status
   };
 };
 
 DFA.prototype.stepInit = function(input) {
-  this.processor.currentInput = input;
+  this.processor.input = input;
+  this.processor.inputLength = this.processor.input.length;
   this.processor.inputIndex = 0;
   this.processor.currentState = this.startState;
-  this.processor.status = 'Active';
+  this.processor.status = (this.processor.inputLength === 0 && this.acceptStates.indexOf(this.processor.currentState) >= 0) ? 'Accept' : 'Active';
   return this.processor.status;
 };
 DFA.prototype.step = function() {
-  if (this.processor.inputIndex === this.processor.currentInput.length) {this.processor.status = (this.acceptStates.indexOf(this.processor.currentState) >= 0 ? 'Accept' : 'Reject');}
-  else if ((this.processor.currentState = this.transition(this.processor.currentState, this.processor.currentInput.substr(this.processor.inputIndex++, 1))) === null) {this.processor.status = 'Reject';}
+  if ((this.processor.currentState = this.transition(this.processor.currentState, this.processor.input.substr(this.processor.inputIndex++, 1))) === null) {this.processor.status = 'Reject';}
+  if (this.processor.inputIndex === this.processor.inputLength) {this.processor.status = (this.acceptStates.indexOf(this.processor.currentState) >= 0 ? 'Accept' : 'Reject');}
   return this.processor.status;
 };
 
