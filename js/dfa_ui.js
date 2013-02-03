@@ -208,6 +208,7 @@ var dfa_ui = (function() {
         $('#stopBtn').prop('disabled', false).find('img').prop('src', 'images/clock_stop.png');;
         $('#testBtn, #bulkTestBtn').prop('disabled', true).find('img').prop('src', 'images/arrow_right_grey.png');;
         $('#dfaStatus').show();
+        $('#testString').prop('disabled', true);
         dfa.stepInit(input);
       } else {
         dfa.step();
@@ -222,6 +223,7 @@ var dfa_ui = (function() {
       $('#debugBtn').prop('disabled', false).find('img').prop('src', 'images/clock_go.png');
       $('.current').removeClass('current');
       $('#dfaStatus').hide();
+      $('#testString').prop('disabled', false);
       return self;
     }
   };
