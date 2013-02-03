@@ -1,26 +1,12 @@
-var dfa_ui = (function() {
+var fsm = (function() {
   var self = null;
-  var dfa = null;
+  var delegate = null;
   var container = null;
   var stateCounter = 0;
   
   var connectionClicked = function(connection) {
-    // TODO: Change this to edit the transition?
-    dfa.removeTransition(connection.sourceId, connection.getOverlay("label").getLabel(), connection.targetId);
+    delegate.fsm().removeTransition(connection.sourceId, connection.getOverlay("label").getLabel(), connection.targetId);
     jsPlumb.detach(connection);
-  };
-  
-  var connectionAdded = function(info) {
-    var inputChar = prompt('Read what input character on transition?', 'A');
-    if (!inputChar || dfa.hasTransition(info.sourceId, inputChar)) {
-      if (inputChar) {alert(info.sourceId + " already has a transition for " + inputChar);}
-      jsPlumb.detach(info.connection);
-      return;
-    }
-    inputChar = inputChar[0]; // Only accept single character
-    info.connection.setPaintStyle({strokeStyle:"#0a0"});
-    info.connection.getOverlay("label").setLabel(inputChar);
-    dfa.addTransition(info.sourceId, inputChar, info.targetId);
   };
   
   var domReadyInit = function() {
@@ -43,7 +29,6 @@ var dfa_ui = (function() {
     });
     
     jsPlumb.bind("click", connectionClicked);
-    jsPlumb.bind("jsPlumbConnection", connectionAdded);
     
     // Setup handling 'enter' in test string box
     $('#testString').keyup(function(event) {if (event.which === 13) {$('#testBtn').trigger('click');}});
@@ -67,9 +52,9 @@ var dfa_ui = (function() {
       var cBox = $(this);
       var stateId = cBox.closest('div.state').attr('id');
       if (cBox.prop('checked')) {
-        dfa.addAcceptState(stateId);
+        delegate.fsm().addAcceptState(stateId);
       } else {
-        dfa.removeAcceptState(stateId);
+        delegate.fsm().removeAcceptState(stateId);
       }
     });
     
@@ -78,7 +63,21 @@ var dfa_ui = (function() {
     startState.find('div.delete').remove(); // Can't delete start state
     container.append(startState);
     makeStatePlumbing(startState);
-    dfa.setStartState('start');
+    
+    // Setup the Automaton type listeners:
+    $('span.delegate').on('click', function() {
+      var newDelegate = null;
+      switch ($(this).html()) {
+        case 'DFA': newDelegate = dfa_delegate; break;
+        case 'NFA': newDelegate = nfa_delegate; break;
+        case 'PDA': newDelegate = pda_delegate; break;
+      }
+      if (newDelegate !== delegate) {
+        self.setDelegate(newDelegate);
+        $('span.delegate').removeClass('selected');
+        $(this).addClass('selected');
+      }
+    });
   };
   
   var makeState = function(stateId) {
@@ -108,48 +107,19 @@ var dfa_ui = (function() {
     });
   };
   
-  var updateStatusUI = function(status, curState) {
-    var doneSpan = $('<span id="consumedInput"></span>').html(status.input.substring(0, status.inputIndex));
-    var curSpan = $('<span id="currentInput"></span>').html(status.input.substr(status.inputIndex, 1));
-    var futureSpan = $('<span id="futureInput"></span>').html(status.input.substring(status.inputIndex+1));
-    
-    if (curState.length > 0) {
-      $('#dfaStatus').css('left', curState.position().left + 4 + 'px')
-        .css('top', curState.position().top - 25 + 'px')
-        .html('').append(doneSpan).append(curSpan).append(futureSpan);
-        
-      if ($('#dfaStatus').position().top < 0) { // Flip to bottom
-        $('#dfaStatus').css('top', $('#dfaStatus').position().top + curState.outerHeight() + 29 + 'px');
-      }
-      var overscan = $('#dfaStatus').position().left + $('#dfaStatus').outerWidth() + 4 - $('#machineGraph').innerWidth();
-      if (overscan > 0) { // Push inward
-        $('#dfaStatus').css('left', $('#dfaStatus').position().left - overscan + 'px');
-      }
-    };
-  };
-  
-  var updateUIForDebug = function() {
-    var status = dfa.status();
-    $('.current').removeClass('current');
-    var curState = $('#' + status.state).addClass('current');
-    updateStatusUI(status, curState);
-    
-    if (status.status !== 'Active') {
-      $('#testResult').html(status.status === 'Accept' ? 'Accepted' : 'Rejected').effect('highlight', {color: status.status === 'Accept' ? '#bfb' : '#fbb'}, 1000);
-      $('#debugBtn').prop('disabled', true).find('img').prop('src', 'images/clock_go_grey.png');
-    }
-  };
-  
   return {
     init: function() {
       self = this;
-      dfa = new DFA();
       $(domReadyInit);
+      $(function(){self.setDelegate(dfa_delegate)}); // Default to DFA
       return self;
     },
     
-    setDFA: function(newDFA) {
-      dfa = newDFA;
+    setDelegate: function(newDelegate) {
+      delegate = newDelegate;
+      delegate.reset().fsm().setStartState('start');
+      jsPlumb.unbind("jsPlumbConnection");
+      jsPlumb.bind("jsPlumbConnection", delegate.connectionAdded);
       return self;
     },
     
@@ -173,15 +143,15 @@ var dfa_ui = (function() {
       jsPlumb.select({source:stateId}).detach(); // Remove all connections from UI
       jsPlumb.select({target:stateId}).detach();
       state.remove(); // Remove state from UI
-      dfa.removeTransitions(stateId); // Remove all transitions from model touching this state
-      dfa.removeAcceptState(stateId); // Assure no trace is left
+      delegate.fsm().removeTransitions(stateId); // Remove all transitions from model touching this state
+      delegate.fsm().removeAcceptState(stateId); // Assure no trace is left
       return self;
     },
     
     test: function(input) {
       if ($.type(input) === 'string') {
         $('#testResult').html('Testing...')
-        var accepts = dfa.accepts(input);
+        var accepts = delegate.fsm().accepts(input);
         $('#testResult').html(accepts ? 'Accepted' : 'Rejected').effect('highlight', {color: accepts ? '#bfb' : '#fbb'}, 1000);
       } else {
         $('#resultConsole').html('');
@@ -192,10 +162,10 @@ var dfa_ui = (function() {
           entry.removeClass('pending').addClass(result).attr('title', result).append(' -- ' + result);
         };
         $.each(input.accept, function(index, string) {
-          updateEntry((dfa.accepts(string) ? 'Pass' : 'Fail'), makePendingEntry(string, 'Accept'));
+          updateEntry((delegate.fsm().accepts(string) ? 'Pass' : 'Fail'), makePendingEntry(string, 'Accept'));
         });
         $.each(input.reject, function(index, string) {
-          updateEntry((dfa.accepts(string) ? 'Fail' : 'Pass'), makePendingEntry(string, 'Reject'));
+          updateEntry((delegate.fsm().accepts(string) ? 'Fail' : 'Pass'), makePendingEntry(string, 'Reject'));
         });
         $('#bulkResultHeader').effect('highlight', {color: '#add'}, 1000);
       }
@@ -209,11 +179,16 @@ var dfa_ui = (function() {
         $('#testBtn, #bulkTestBtn').prop('disabled', true).find('img').prop('src', 'images/arrow_right_grey.png');;
         $('#dfaStatus').show();
         $('#testString').prop('disabled', true);
-        dfa.stepInit(input);
+        delegate.fsm().stepInit(input);
       } else {
-        dfa.step();
+        delegate.fsm().step();
       }
-      updateUIForDebug();
+      delegate.updateUI();
+      var status = delegate.fsm().status();
+      if (status.status !== 'Active') {
+        $('#testResult').html(status.status === 'Accept' ? 'Accepted' : 'Rejected').effect('highlight', {color: status.status === 'Accept' ? '#bfb' : '#fbb'}, 1000);
+        $('#debugBtn').prop('disabled', true).find('img').prop('src', 'images/clock_go_grey.png');
+      }
       return self;
     },
     
@@ -228,4 +203,3 @@ var dfa_ui = (function() {
     }
   };
 })().init();
-

@@ -3,14 +3,39 @@ body {
 }
 
 h1 {
-  margin-top: 1px;
-  margin-bottom: 1px;
+  margin-top: 0px;
+  margin-bottom: 2px;
   text-align: center;
   font-size: 14pt;
   font-weight: normal;
   letter-spacing: 3px;
   word-spacing: 20px;
 }
+
+  span.delegate {
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-left: 4px;
+    padding-right: 4px;
+    display: inline-block;
+    width: 45px;
+    background-color: #ccc;
+    border: 1px solid #fff;
+    border-radius: 5px;
+  }
+  
+  span.delegate:hover {
+    cursor: pointer;
+  }
+  
+  span.delegate:hover, span.delegate.selected {
+    background-color: #eee;
+    border-color: #222;
+  }
+  
+  span.delegate.selected:hover {
+    cursor: default;
+  }
 
 h5 {
   margin-top: 2px;
