@@ -58,12 +58,6 @@ var fsm = (function() {
       }
     });
     
-    // Setup the Start State
-    var startState = makeState('start');
-    startState.find('div.delete').remove(); // Can't delete start state
-    container.append(startState);
-    makeStatePlumbing(startState);
-    
     // Setup the Automaton type listeners:
     $('span.delegate').on('click', function() {
       var newDelegate = null;
@@ -78,6 +72,13 @@ var fsm = (function() {
         $(this).addClass('selected');
       }
     });
+  };
+  
+  var makeStartState = function() {
+    var startState = makeState('start');
+    startState.find('div.delete').remove(); // Can't delete start state
+    container.append(startState);
+    makeStatePlumbing(startState);
   };
   
   var makeState = function(stateId) {
@@ -120,6 +121,9 @@ var fsm = (function() {
       delegate.reset().fsm().setStartState('start');
       jsPlumb.unbind("jsPlumbConnection");
       jsPlumb.bind("jsPlumbConnection", delegate.connectionAdded);
+      jsPlumb.detachAllConnections($('.state'));
+      $('#machineGraph').html('');
+      makeStartState();
       return self;
     },
     
