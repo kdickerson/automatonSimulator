@@ -4,8 +4,9 @@ function DFA(useDefaults) {
   this.acceptStates = useDefaults ? ['accept'] : [];
   
   this.processor = {
-    currentInput: null,
-    currentState: null,
+    input: null,
+    inputLength: 0,
+    state: null,
     inputIndex: 0,
     status: null,
   };
@@ -79,7 +80,7 @@ DFA.prototype.accepts = function(input) {
 };
 
 DFA.prototype.status = function() {
-  return {state: this.processor.currentState, 
+  return {state: this.processor.state, 
     input: this.processor.input,
     inputIndex: this.processor.inputIndex,
     nextChar: this.processor.input.substr(this.processor.inputIndex, 1),
@@ -91,13 +92,13 @@ DFA.prototype.stepInit = function(input) {
   this.processor.input = input;
   this.processor.inputLength = this.processor.input.length;
   this.processor.inputIndex = 0;
-  this.processor.currentState = this.startState;
-  this.processor.status = (this.processor.inputLength === 0 && this.acceptStates.indexOf(this.processor.currentState) >= 0) ? 'Accept' : 'Active';
+  this.processor.state = this.startState;
+  this.processor.status = (this.processor.inputLength === 0 && this.acceptStates.indexOf(this.processor.state) >= 0) ? 'Accept' : 'Active';
   return this.processor.status;
 };
 DFA.prototype.step = function() {
-  if ((this.processor.currentState = this.transition(this.processor.currentState, this.processor.input.substr(this.processor.inputIndex++, 1))) === null) {this.processor.status = 'Reject';}
-  if (this.processor.inputIndex === this.processor.inputLength) {this.processor.status = (this.acceptStates.indexOf(this.processor.currentState) >= 0 ? 'Accept' : 'Reject');}
+  if ((this.processor.state = this.transition(this.processor.state, this.processor.input.substr(this.processor.inputIndex++, 1))) === null) {this.processor.status = 'Reject';}
+  if (this.processor.inputIndex === this.processor.inputLength) {this.processor.status = (this.acceptStates.indexOf(this.processor.state) >= 0 ? 'Accept' : 'Reject');}
   return this.processor.status;
 };
 
