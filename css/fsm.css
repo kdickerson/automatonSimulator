@@ -110,6 +110,10 @@ h5 {
     text-align: center;
   }
     
+    div.dragHover {
+      background-color: #aff;
+    }
+    
     div.current {
       background-color: #8c8;
     }
@@ -176,7 +180,6 @@ h5 {
   text-align: center;
   margin-top: 2px;
 }
-
 
 /* Image Configurations */
 button.image img, img.delete {

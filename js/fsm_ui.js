@@ -14,18 +14,20 @@ var fsm = (function() {
     self.setGraphContainer($('#machineGraph'));
     
     jsPlumb.importDefaults({
+      Anchors: ["Continuous", "Continuous"],
       ConnectorZIndex: 5,
-      Endpoint : ["Dot", {radius:2}],
-      HoverPaintStyle : {strokeStyle:"#42a62c", lineWidth:2},
-      ConnectionOverlays : [
+      Endpoint: ["Dot", {radius:2}],
+      HoverPaintStyle: {strokeStyle:"#42a62c", lineWidth:2},
+      ConnectionOverlays: [
         ["Arrow", {
           location: 1,
-          id: "arrow",
           length: 14,
           foldback: 0.8
           }],
-        ["Label", {label:"FOO", id:"label"}]
-      ]
+        ["Label", {location:0.5}]
+      ],
+      Connector: ["StateMachine", {curviness:20}],
+      PaintStyle: {strokeStyle:'#00a', lineWidth:2}
     });
     
     jsPlumb.bind("click", connectionClicked);
@@ -89,18 +91,14 @@ var fsm = (function() {
     var source = state.find('.plumbSource');
     jsPlumb.makeSource(source, {
       parent: state,
-      anchor: "Continuous",
-      connector: ["StateMachine", {curviness:20}],
-      connectorStyle: {strokeStyle:"#00a", lineWidth:2},
       maxConnections: 5,
       onMaxConnections:function(info, e) {
         alert("Maximum connections (" + info.maxConnections + ") reached");
-      }
+      },
     });
 
     jsPlumb.makeTarget(state, {
-      dropOptions: {hoverClass: "dragHover"},
-      anchor: "Continuous"
+      dropOptions: {hoverClass:'dragHover'}
     });
   };
   
