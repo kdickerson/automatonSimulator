@@ -12,31 +12,16 @@ h1 {
   word-spacing: 20px;
 }
 
-  span.delegate {
+  button.delegate {
     margin-left: 10px;
     margin-right: 10px;
     padding-left: 4px;
     padding-right: 4px;
     display: inline-block;
     width: 45px;
-    background-color: #ccc;
-    border: 1px solid #fff;
-    border-radius: 5px;
+    vertical-align: top;
   }
   
-  span.delegate:hover {
-    cursor: pointer;
-  }
-  
-  span.delegate:hover, span.delegate.selected {
-    background-color: #eee;
-    border-color: #222;
-  }
-  
-  span.delegate.selected:hover {
-    cursor: default;
-  }
-
 h5 {
   margin-top: 2px;
   margin-bottom: 2px;
@@ -194,3 +179,33 @@ button img, div.delete img {
   text-align: center;
   margin-top: 2px;
 }
+
+
+/* Button Icon Configurations */
+button.image img {
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+}
+#loadBtn img {background-image: url('../images/door_out.png');}
+#loadBtn:disabled img {background-image: url('../images/door_out_grey.png');}
+
+#saveBtn img {background-image: url('../images/door_in.png');}
+#saveBtn:disabled img {background-image: url('../images/door_in_grey.png');}
+
+#addStateBtn img {background-image: url('../images/add.png');}
+#addStateBtn:disabled img {background-image: url('../images/add_grey.png');}
+
+#testBtn img {background-image: url('../images/arrow_right.png');}
+#testBtn:disabled img {background-image: url('../images/arrow_right_grey.png');}
+
+#stopBtn img {background-image: url('../images/clock_stop.png');}
+#stopBtn:disabled img {background-image: url('../images/clock_stop_grey.png');}
+
+#debugBtn img {background-image: url('../images/clock_go.png');}
+#debugBtn:disabled img {background-image: url('../images/clock_go_grey.png');}
+
+#bulkTestBtn img {background-image: url('../images/arrow_right.png');}
+#bulkTestBtn:disabled img {background-image: url('../images/arrow_right_grey.png');}

@@ -27,8 +27,6 @@ var dfa_delegate = (function() {
     $('.current').removeClass('current');
     var curState = $('#' + status.state).addClass('current');
     updateStatusUI(status, curState);
-    
-    
   };
 
   return {
@@ -64,6 +62,14 @@ var dfa_delegate = (function() {
     reset: function() {
       dfa = new DFA();
       return self;
+    },
+    
+    debugStart: function() {
+      $('<div id="dfaStatus"></div>').appendTo('#machineGraph');
+    },
+    
+    debugStop: function() {
+      $('#dfaStatus').remove();
     }
   };
 }()).init();

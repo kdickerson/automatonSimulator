@@ -9,21 +9,23 @@
   <body>
     <div id="tools">
       <div style="text-align:center;">
-        <button id="addStateBtn" onclick="fsm.addState();">Add State</button>
+        <button id="saveBtn" onclick="fsm.save();" class="image" title="Save"><img src="empty.png" /></button>
+        <button id="loadBtn" onclick="fsm.load();" class="image" title="Load" style="margin-right: 20px;"><img src="empty.png" /></button>
+        <button id="addStateBtn" onclick="fsm.addState();" class="image" title="Add State"><img src="empty.png" /></button>
       </div>
       <label>Test / Debug:</label>
       <input id="testString" type="text" value="" /><br />
       <div style="text-align:center;">
-        <button id="testBtn" onclick="fsm.test($('#testString').val());" title="Test"><img src="images/arrow_right.png" /></button>
-        <button id="stopBtn" onclick="fsm.debugStop();" disabled="disabled" title="Stop Debug"><img src="images/clock_stop_grey.png" /></button>
-        <button id="debugBtn" onclick="fsm.debug($('#testString').val());" title="Start/Step Debug"><img src="images/clock_go.png" /></button>
+        <button id="testBtn" onclick="fsm.test($('#testString').val());" class="image" title="Test"><img src="empty.png" /></button>
+        <button id="stopBtn" onclick="fsm.debugStop();" disabled="disabled" class="image" title="Stop Debug"><img src="empty.png" /></button>
+        <button id="debugBtn" onclick="fsm.debug($('#testString').val());" class="image" title="Start/Step Debug"><img src="empty.png" /></button>
       </div>
       <div id="testResult">&nbsp;</div>
       
       <hr />
       <h5>
         Bulk Testing
-        <button id="bulkTestBtn" style="margin-left:15px;" onclick="fsm.test({accept:$('#acceptStrings').val().split('\n'), reject:$('#rejectStrings').val().split('\n')});" title="Run Bulk Tests"><img src="images/arrow_right.png" /></button>
+        <button id="bulkTestBtn" class="image" style="margin-left:15px;" onclick="fsm.test({accept:$('#acceptStrings').val().split('\n'), reject:$('#rejectStrings').val().split('\n')});" title="Run Bulk Tests"><img src="empty.png" /></button>
       </h5>
       <label>Accept (one per line):</label>
       <textarea id="acceptStrings" style="margin-bottom:5px;"></textarea>
@@ -35,9 +37,9 @@
     <div id="mainHolder">
       <h1>
           Automaton Simulator:
-          <span class="delegate selected" title="Deterministic Finite Automaton">DFA</span>
-          <span class="delegate" title="Non-Deterministic Finite Automaton">NFA</span>
-          <span class="delegate" title="Pushdown Automaton">PDA</span>
+          <button class="delegate" disabled="disabled" title="Deterministic Finite Automaton">DFA</button>
+          <button class="delegate" title="Non-Deterministic Finite Automaton">NFA</button>
+          <button class="delegate" title="Pushdown Automaton">PDA</button>
       </h1>
       <div id="machineGraph">
           <div id="dfaStatus" style="display:none;"></div>

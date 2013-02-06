@@ -59,7 +59,7 @@ var fsm = (function() {
     });
     
     // Setup the Automaton type listeners:
-    $('span.delegate').on('click', function() {
+    $('button.delegate').on('click', function() {
       var newDelegate = null;
       switch ($(this).html()) {
         case 'DFA': newDelegate = dfa_delegate; break;
@@ -68,8 +68,8 @@ var fsm = (function() {
       }
       if (newDelegate !== delegate) {
         self.setDelegate(newDelegate);
-        $('span.delegate').removeClass('selected');
-        $(this).addClass('selected');
+        $('button.delegate').prop('disabled', false);
+        $(this).prop('disabled', true);
       }
     });
   };
@@ -179,10 +179,9 @@ var fsm = (function() {
     debug: function(input) {
       if ($('#stopBtn').prop('disabled')) {
         $('#testResult').html('&nbsp;');
-        $('#stopBtn').prop('disabled', false).find('img').prop('src', 'images/clock_stop.png');;
-        $('#testBtn, #bulkTestBtn').prop('disabled', true).find('img').prop('src', 'images/arrow_right_grey.png');;
-        $('#dfaStatus').show();
-        $('#testString').prop('disabled', true);
+        $('#stopBtn').prop('disabled', false);
+        $('#loadBtn, #testBtn, #bulkTestBtn, #testString').prop('disabled', true);
+        delegate.debugStart();
         delegate.fsm().stepInit(input);
       } else {
         delegate.fsm().step();
@@ -191,19 +190,25 @@ var fsm = (function() {
       var status = delegate.fsm().status();
       if (status.status !== 'Active') {
         $('#testResult').html(status.status === 'Accept' ? 'Accepted' : 'Rejected').effect('highlight', {color: status.status === 'Accept' ? '#bfb' : '#fbb'}, 1000);
-        $('#debugBtn').prop('disabled', true).find('img').prop('src', 'images/clock_go_grey.png');
+        $('#debugBtn').prop('disabled', true);
       }
       return self;
     },
     
     debugStop: function() {
-      $('#stopBtn').prop('disabled', true).find('img').prop('src', 'images/clock_stop_grey.png');
-      $('#testBtn, #bulkTestBtn').prop('disabled', false).find('img').prop('src', 'images/arrow_right.png');
-      $('#debugBtn').prop('disabled', false).find('img').prop('src', 'images/clock_go.png');
+      $('#stopBtn').prop('disabled', true);
+      $('#loadBtn, #testBtn, #bulkTestBtn, #debugBtn, #testString').prop('disabled', false);
       $('.current').removeClass('current');
-      $('#dfaStatus').hide();
-      $('#testString').prop('disabled', false);
+      delegate.debugStop();
       return self;
+    },
+    
+    load: function() {
+      
+    },
+    
+    save: function() {
+      
     }
   };
 })().init();
