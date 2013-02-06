@@ -5,7 +5,7 @@ var fsm = (function() {
   var stateCounter = 0;
   
   var connectionClicked = function(connection) {
-    delegate.fsm().removeTransition(connection.sourceId, connection.getOverlay("label").getLabel(), connection.targetId);
+    delegate.fsm().removeTransition(connection.sourceId, connection.getLabel(), connection.targetId);
     jsPlumb.detach(connection);
   };
   
@@ -17,7 +17,7 @@ var fsm = (function() {
       Anchors: ["Continuous", "Continuous"],
       ConnectorZIndex: 5,
       Endpoint: ["Dot", {radius:2}],
-      HoverPaintStyle: {strokeStyle:"#42a62c", lineWidth:2},
+      HoverPaintStyle: {strokeStyle:"#d44", lineWidth:2},
       ConnectionOverlays: [
         ["Arrow", {
           location: 1,
@@ -27,7 +27,7 @@ var fsm = (function() {
         ["Label", {location:0.5}]
       ],
       Connector: ["StateMachine", {curviness:20}],
-      PaintStyle: {strokeStyle:'#00a', lineWidth:2}
+      PaintStyle: {strokeStyle:'#0dd', lineWidth:2}
     });
     
     jsPlumb.bind("click", connectionClicked);

@@ -181,6 +181,19 @@ h5 {
   margin-top: 2px;
 }
 
+/* jsPlumb z-index styles */
+._jsPlumb_connector {
+  z-index: 3;
+}
+
+._jsPlumb_endpoint {
+  z-index: 4;
+}
+
+._jsPlumb_overlay {
+  z-index: 5;
+}
+
 /* Image Configurations */
 button.image img, img.delete {
   background-image: url('../images/sprites.png');
