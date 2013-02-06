@@ -181,31 +181,37 @@ button img, div.delete img {
 }
 
 
-/* Button Icon Configurations */
-button.image img {
+/* Image Configurations */
+button.image img, img.delete {
+  background-image: url('../images/sprites_16.png');
   background-repeat: no-repeat;
   background-position: center;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   display: inline-block;
 }
-#loadBtn img {background-image: url('../images/door_out.png');}
-#loadBtn:disabled img {background-image: url('../images/door_out_grey.png');}
 
-#saveBtn img {background-image: url('../images/door_in.png');}
-#saveBtn:disabled img {background-image: url('../images/door_in_grey.png');}
+img.delete {background-position: 0 -594px;}
+img.delete:hover {background-position: 0 -528px;}
 
-#addStateBtn img {background-image: url('../images/add.png');}
-#addStateBtn:disabled img {background-image: url('../images/add_grey.png');}
+#loadBtn img {background-position: 0 -792px;}
+#loadBtn:disabled img {background-position: 0 -858px;}
 
-#testBtn img {background-image: url('../images/arrow_right.png');}
-#testBtn:disabled img {background-image: url('../images/arrow_right_grey.png');}
+#saveBtn img {background-position: 0 -660px;}
+#saveBtn:disabled img {background-position: 0 -726px;}
 
-#stopBtn img {background-image: url('../images/clock_stop.png');}
-#stopBtn:disabled img {background-image: url('../images/clock_stop_grey.png');}
+#addStateBtn img {background-position: 0 0;}
+#addStateBtn:disabled img {background-position: 0 -66px;}
 
-#debugBtn img {background-image: url('../images/clock_go.png');}
-#debugBtn:disabled img {background-image: url('../images/clock_go_grey.png');}
+#testBtn img {background-position: 0 -132px;}
+#testBtn:disabled img {background-position: 0 -198px;}
 
-#bulkTestBtn img {background-image: url('../images/arrow_right.png');}
-#bulkTestBtn:disabled img {background-image: url('../images/arrow_right_grey.png');}
+#stopBtn img {background-position: 0 -396px;}
+#stopBtn:disabled img {background-position: 0 -462px;}
+
+#debugBtn img {background-position: 0 -264px;}
+#debugBtn:disabled img {background-position: 0 -330px;}
+
+#bulkTestBtn img {background-position: 0 -132px;}
+#bulkTestBtn:disabled img {background-position: 0 -198px;}
+

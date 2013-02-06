@@ -36,10 +36,6 @@ var fsm = (function() {
     // Setup handling the 'delete' divs on states
     container.on('mouseover', 'div.state', function(event) {
       $(this).find('div.delete').show();
-    }).on('mouseover', 'div.delete', function(event) {
-      $(this).find('img').eq(0).prop('src', 'images/cross.png');
-    }).on('mouseout', 'div.delete', function(event) {
-      $(this).find('img').eq(0).prop('src', 'images/cross_grey.png');
     }).on('mouseout', 'div.state', function(event) {
       $(this).find('div.delete').hide();
     });
@@ -86,7 +82,7 @@ var fsm = (function() {
       .append('<input id="' + stateId+'_isAccept' + '" type="checkbox" class="isAccept" value="true" title="Accept State" />')
       .append(stateId)
       .append('<div class="plumbSource" title="Drag from here to create new transition">&nbsp;</div>')
-      .append('<div class="delete" style="display:none;" title="Delete"><img src="images/cross_grey.png" /></div>');
+      .append('<div class="delete" style="display:none;" title="Delete"><img class="delete" src="images/empty.png" /></div>');
   };
   
   var makeStatePlumbing = function(state) {
