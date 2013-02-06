@@ -32,10 +32,6 @@ h5 {
   text-align: center;
 }
 
-button img, div.delete img {
-  vertical-align: middle;
-}
-
 #tools {
   position: absolute;
   width: 175px;
@@ -144,8 +140,6 @@ button img, div.delete img {
       line-height: 20px; 
       text-align: center;
       color: #aaa;
-      border: 1px solid #aaa;
-      border-radius: 5px;
     }
 
     div.delete:hover {
@@ -192,6 +186,7 @@ button.image img, img.delete {
   width: 20px;
   height: 20px;
   display: inline-block;
+  vertical-align: middle;
 }
 
 img.delete {background-position: 0 -198px;}
