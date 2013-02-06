@@ -74,7 +74,7 @@ h5 {
     cursor: default;
   }
 
-  #dfaStatus {
+  .fsmStatus {
     position: absolute;
     border: 1px solid #aaa;
     background-color: #fff;
@@ -86,15 +86,15 @@ h5 {
     border-radius: 2px;
     opacity: 0.8;
   }
-    #consumedInput {
+    .consumedInput {
       text-decoration: line-through;
     }
-    #currentInput {
+    .currentInput {
       font-weight: bold;
       margin-left: 4px;
       margin-right: 4px;
     }
-    #futureInput {
+    .futureInput {
       font-style: italic;
     }
 

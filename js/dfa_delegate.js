@@ -3,9 +3,9 @@ var dfa_delegate = (function() {
   var dfa = null;
 
   var updateStatusUI = function(status, curState) {
-    var doneSpan = $('<span id="consumedInput"></span>').html(status.input.substring(0, status.inputIndex));
-    var curSpan = $('<span id="currentInput"></span>').html(status.input.substr(status.inputIndex, 1));
-    var futureSpan = $('<span id="futureInput"></span>').html(status.input.substring(status.inputIndex+1));
+    var doneSpan = $('<span class="consumedInput"></span>').html(status.input.substring(0, status.inputIndex));
+    var curSpan = $('<span class="currentInput"></span>').html(status.input.substr(status.inputIndex, 1));
+    var futureSpan = $('<span class="futureInput"></span>').html(status.input.substring(status.inputIndex+1));
     
     if (curState.length > 0) {
       $('#dfaStatus').css('left', curState.position().left + 4 + 'px')
@@ -52,8 +52,7 @@ var dfa_delegate = (function() {
         }
         return;
       } 
-      info.connection.setPaintStyle({strokeStyle:"#0a0"});
-      info.connection.getOverlay("label").setLabel(inputChar);
+      info.connection.setLabel(inputChar);
       dfa.addTransition(info.sourceId, inputChar, info.targetId);
     },
     
@@ -65,7 +64,7 @@ var dfa_delegate = (function() {
     },
     
     debugStart: function() {
-      $('<div id="dfaStatus"></div>').appendTo('#machineGraph');
+      $('<div id="dfaStatus" class="fsmStatus"></div>').appendTo('#machineGraph');
     },
     
     debugStop: function() {
