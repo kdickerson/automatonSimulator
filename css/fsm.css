@@ -19,7 +19,10 @@ h1 {
     padding-right: 4px;
     display: inline-block;
     width: 45px;
-    vertical-align: top;
+    vertical-align: bottom;
+    font-size: 10pt;
+    letter-spacing: 2px;
+    text-align: center;
   }
   
 h5 {
@@ -186,31 +189,31 @@ button.image img, img.delete {
   background-image: url('../images/sprites.png');
   background-repeat: no-repeat;
   background-position: center;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   display: inline-block;
 }
 
-img.delete {background-position: 0 -162px;}
-img.delete:hover {background-position: 0 -144px;}
+img.delete {background-position: 0 -198px;}
+img.delete:hover {background-position: 0 -176px;}
 
-#loadBtn img {background-position: 0 -216px;}
-#loadBtn:disabled img {background-position: 0 -234px;}
+#loadBtn img {background-position: 0 -264px;}
+#loadBtn:disabled img {background-position: 0 -286px;}
 
-#saveBtn img {background-position: 0 -180px;}
-#saveBtn:disabled img {background-position: 0 -198px;}
+#saveBtn img {background-position: 0 -220px;}
+#saveBtn:disabled img {background-position: 0 -242px;}
 
 #addStateBtn img {background-position: 0 0;}
-#addStateBtn:disabled img {background-position: 0 -18px;}
+#addStateBtn:disabled img {background-position: 0 -22px;}
 
-#testBtn img {background-position: 0 -36px;}
-#testBtn:disabled img {background-position: 0 -54px;}
+#testBtn img {background-position: 0 -44px;}
+#testBtn:disabled img {background-position: 0 -66px;}
 
-#stopBtn img {background-position: 0 -108px;}
-#stopBtn:disabled img {background-position: 0 -126px;}
+#stopBtn img {background-position: 0 -132px;}
+#stopBtn:disabled img {background-position: 0 -154px;}
 
-#debugBtn img {background-position: 0 -72px;}
-#debugBtn:disabled img {background-position: 0 -90px;}
+#debugBtn img {background-position: 0 -88px;}
+#debugBtn:disabled img {background-position: 0 -110px;}
 
-#bulkTestBtn img {background-position: 0 -36px;}
-#bulkTestBtn:disabled img {background-position: 0 -54px;}
+#bulkTestBtn img {background-position: 0 -44px;}
+#bulkTestBtn:disabled img {background-position: 0 -66px;}
