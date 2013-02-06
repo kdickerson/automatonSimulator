@@ -187,13 +187,13 @@ NFA.runTests = function() {
   assert(!myNFA.accepts('ab'), 'Reject ab');
   
   var myNFA_asString = myNFA.saveToString();
-  var otherDFA = new DFA().loadFromString(myNFA_asString);
+  var otherDFA = new NFA().loadFromString(myNFA_asString);
   assert(myNFA_asString === otherDFA.saveToString(), 'Save, Load, Save has no changes');
   assert(!otherDFA.accepts('ab'), 'Loaded DFA rejects ab');
   assert(!otherDFA.accepts(''), 'Loaded DFA rejects [empty string]');
   assert(!otherDFA.accepts('a'), 'Loaded DFA rejects a');
   
-  myNFA = new DFA(true)
+  myNFA = new NFA(true)
     .addTransition('start', 'a', 's1')
     .addTransition('s1', 'b', 's2')
     .addTransition('s2', 'c', 'start')
@@ -206,4 +206,26 @@ NFA.runTests = function() {
   assert(!myNFA.accepts('ae'), 'Reject ae');
   
   // Tests specifically for NFA
+  myNFA = new NFA(true)
+    .addTransition('start', '', 'accept')
+  assert(myNFA.accepts(''), 'Accept [empty string] through epsilon');
+  
+  myNFA.removeTransition('start', '', 'accept')
+    .addTransition('start', '', 'b1')
+    .addTransition('start', '', 'a1')
+    .addTransition('a1', 'a', 'accept')
+    .addTransition('b1', 'b', 'accept')
+  assert(myNFA.accepts('a'), 'Accept a through epsilon');
+  assert(myNFA.accepts('b'), 'Accept b through epsilon');
+  assert(!myNFA.accepts(''), 'Reject [empty string]');
+  assert(!myNFA.accepts('bbbb'), 'Reject bbbb');
+  
+  myNFA.addTransition('b1', '', 'b2')
+    .addTransition('b2', '', 'b3')
+    .addTransition('b3', 'b', 'b3')
+    .addTransition('b3', 'b', 'accept')
+  assert(myNFA.accepts('b'), 'Accept b through epsilon');
+  assert(myNFA.accepts('bbbb'), 'Accept bbbb through multiple epsilons');
+  assert(!myNFA.accepts('aa'), 'Reject aa');
+  
 }
