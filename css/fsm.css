@@ -183,7 +183,7 @@ button img, div.delete img {
 
 /* Image Configurations */
 button.image img, img.delete {
-  background-image: url('../images/sprites_16.png');
+  background-image: url('../images/sprites.png');
   background-repeat: no-repeat;
   background-position: center;
   width: 16px;
@@ -191,27 +191,26 @@ button.image img, img.delete {
   display: inline-block;
 }
 
-img.delete {background-position: 0 -594px;}
-img.delete:hover {background-position: 0 -528px;}
+img.delete {background-position: 0 -162px;}
+img.delete:hover {background-position: 0 -144px;}
 
-#loadBtn img {background-position: 0 -792px;}
-#loadBtn:disabled img {background-position: 0 -858px;}
+#loadBtn img {background-position: 0 -216px;}
+#loadBtn:disabled img {background-position: 0 -234px;}
 
-#saveBtn img {background-position: 0 -660px;}
-#saveBtn:disabled img {background-position: 0 -726px;}
+#saveBtn img {background-position: 0 -180px;}
+#saveBtn:disabled img {background-position: 0 -198px;}
 
 #addStateBtn img {background-position: 0 0;}
-#addStateBtn:disabled img {background-position: 0 -66px;}
+#addStateBtn:disabled img {background-position: 0 -18px;}
 
-#testBtn img {background-position: 0 -132px;}
-#testBtn:disabled img {background-position: 0 -198px;}
+#testBtn img {background-position: 0 -36px;}
+#testBtn:disabled img {background-position: 0 -54px;}
 
-#stopBtn img {background-position: 0 -396px;}
-#stopBtn:disabled img {background-position: 0 -462px;}
+#stopBtn img {background-position: 0 -108px;}
+#stopBtn:disabled img {background-position: 0 -126px;}
 
-#debugBtn img {background-position: 0 -264px;}
-#debugBtn:disabled img {background-position: 0 -330px;}
+#debugBtn img {background-position: 0 -72px;}
+#debugBtn:disabled img {background-position: 0 -90px;}
 
-#bulkTestBtn img {background-position: 0 -132px;}
-#bulkTestBtn:disabled img {background-position: 0 -198px;}
-
+#bulkTestBtn img {background-position: 0 -36px;}
+#bulkTestBtn:disabled img {background-position: 0 -54px;}
