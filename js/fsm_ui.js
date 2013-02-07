@@ -10,7 +10,6 @@ var fsm = (function() {
   };
   
   var domReadyInit = function() {
-    jsPlumb.Defaults.Container = $('#machineGraph');
     self.setGraphContainer($('#machineGraph'));
     
     jsPlumb.importDefaults({
@@ -70,6 +69,12 @@ var fsm = (function() {
         $(this).prop('disabled', true);
       }
     });
+    
+    $('button.delegate').each(function() {
+      if ($(this).html() === 'DFA') { // Default to DFA
+        $(this).click();
+      }
+    });
   };
   
   var makeStartState = function() {
@@ -100,29 +105,32 @@ var fsm = (function() {
     jsPlumb.makeTarget(state, {
       dropOptions: {hoverClass:'dragHover'}
     });
+    return state;
   };
   
   return {
     init: function() {
       self = this;
       $(domReadyInit);
-      $(function(){self.setDelegate(dfa_delegate)}); // Default to DFA
       return self;
     },
     
     setDelegate: function(newDelegate) {
       delegate = newDelegate;
+      delegate.setContainer(container);
       delegate.reset().fsm().setStartState('start');
       jsPlumb.unbind("jsPlumbConnection");
       jsPlumb.bind("jsPlumbConnection", delegate.connectionAdded);
       jsPlumb.detachAllConnections($('.state'));
-      $('#machineGraph').html('');
+      container.html('');
+      stateCounter = 0;
       makeStartState();
       return self;
     },
     
     setGraphContainer: function(newContainer) {
       container = newContainer;
+      jsPlumb.Defaults.Container = container;
       return self;
     },
     
