@@ -4,7 +4,6 @@ var dfa_delegate = (function() {
   var container = null;
   
   var statusConnector = null;
-  var statusPaintStyle = null;
 
   var updateStatusUI = function(status, curState) {
     var doneSpan = $('<span class="consumedInput"></span>').html(status.input.substring(0, status.inputIndex));
@@ -30,15 +29,14 @@ var dfa_delegate = (function() {
     var status = dfa.status();
     
     $('.current').removeClass('current');
-    if (statusConnector) {statusConnector.setPaintStyle(statusPaintStyle);}
+    if (statusConnector) {statusConnector.setPaintStyle(jsPlumb.Defaults.PaintStyle);}
     
     if (status.status === 'Active') {
       var curState = $('#' + status.state).addClass('current');
       jsPlumb.select({source:status.state}).each(function(connection) {
         if (connection.getLabel() === status.nextChar) {
           statusConnector = connection;
-          statusPaintStyle = statusConnector.getPaintStyle();
-          statusConnector.setPaintStyle({strokeStyle:'#0a0'});
+          connection.setPaintStyle({strokeStyle:'#0a0'});
         }
       });
       updateStatusUI(status, curState);
