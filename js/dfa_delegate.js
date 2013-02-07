@@ -1,6 +1,7 @@
 var dfa_delegate = (function() {
   var self = null;
   var dfa = null;
+  var container = null;
 
   var updateStatusUI = function(status, curState) {
     var doneSpan = $('<span class="consumedInput"></span>').html(status.input.substring(0, status.inputIndex));
@@ -27,6 +28,7 @@ var dfa_delegate = (function() {
     $('.current').removeClass('current');
     var curState = $('#' + status.state).addClass('current');
     updateStatusUI(status, curState);
+    return self;
   };
 
   return {
@@ -36,11 +38,17 @@ var dfa_delegate = (function() {
       return self;
     },
     
+    setContainer: function(newContainer) {
+      container = newContainer;
+      return self;
+    },
+    
     fsm: function() {
       return dfa;
     },
     
     connectionAdded: function(info) {
+      // TODO: Better UI
       var inputChar = prompt('Read what input character on transition?', 'A');
       inputChar = (inputChar && inputChar.length > 0) ? inputChar[0] : inputChar;
       if (!inputChar || dfa.hasTransition(info.sourceId, inputChar)) {
@@ -64,11 +72,37 @@ var dfa_delegate = (function() {
     },
     
     debugStart: function() {
-      $('<div id="dfaStatus" class="fsmStatus"></div>').appendTo('#machineGraph');
+      $('<div id="dfaStatus" class="fsmStatus"></div>').appendTo(container);
+      return self;
     },
     
     debugStop: function() {
       $('#dfaStatus').remove();
+      return self;
+    },
+    
+    serialize: function() {
+      // Convert dfa into common serialized format
+      var model = {};
+      model.type = 'DFA';
+      model.dfa = dfa.serialize();
+      model.states = {};
+      model.transitions = [];
+      $.each(model.dfa.transitions, function(stateA, transition) {
+        model.states[stateA] = {};
+        $.each(transition, function(character, stateB) {
+          model.states[stateB] = {};
+          model.transitions.push({stateA:stateA, label:character, stateB:stateB});
+        });
+      });
+      $.each(model.dfa.acceptStates, function(index, state) {
+        model.states[state].isAccept = true;
+      });
+      return model;
+    },
+    
+    deserialize: function(model) {
+      dfa.deserialize(model.dfa);
     }
   };
 }()).init();
