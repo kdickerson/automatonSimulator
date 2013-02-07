@@ -198,11 +198,56 @@ var fsm = (function() {
     },
     
     load: function() {
+      // TODO: Better UI
+      // TODO: UI for loading from browser storage
+      var asString = prompt('Enter JSON', '');
+      if (!asString) {return;}
+      var model = JSON.parse(asString);
       
+      // Load the delegate
+      $('button.delegate').each(function() {
+        if ($(this).html() === model.type) {
+          $(this).click();
+        }
+      });
+      
+      // Create states
+      $.each(model.states, function(stateId, data) {
+        var state = null;
+        if (stateId !== 'start') {
+          state = makeState(stateId)
+            .css('left', data.left + 'px')
+            .css('top', data.top + 'px')
+            .appendTo(container);
+          jsPlumb.draggable(state, {containment:"parent"});
+          makeStatePlumbing(state);
+        } else {
+          state = $('#start');
+        }
+        if (data.isAccept) {state.find('input.isAccept').prop('checked', true);}
+      });
+      
+      // Create Transitions
+      jsPlumb.unbind("jsPlumbConnection"); // unbind listener to prevent transition prompts
+      $.each(model.transitions, function(index, transition) {
+        jsPlumb.connect({source:transition.stateA, target:transition.stateB}).setLabel(transition.label);
+      });
+      jsPlumb.bind("jsPlumbConnection", delegate.connectionAdded);
+      
+      // Deserialize to the fsm
+      delegate.deserialize(model);
     },
     
     save: function() {
+      var model = delegate.serialize();
+      container.find('div.state').each(function() {
+        if ($(this).attr('id') !== 'start') {$.extend(model.states[$(this).attr('id')], $(this).position());}
+      });
       
+      var asString = JSON.stringify(model);
+      alert(asString);
+      // TODO: Better UI
+      // TODO: UI for saving to browser storage
     }
   };
 })().init();
