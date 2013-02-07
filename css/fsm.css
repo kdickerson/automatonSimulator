@@ -205,7 +205,7 @@ button.image img, img.delete {
   vertical-align: middle;
 }
 
-img.delete {background-position: 0 -198px;}
+img.delete {width:16px; height: 16px; background-position: 0 -198px;}
 img.delete:hover {background-position: 0 -176px;}
 
 #loadBtn img {background-position: 0 -264px;}
