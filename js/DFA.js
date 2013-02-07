@@ -17,16 +17,24 @@ DFA.prototype.transition = function(state, character) {
   return !retVal ? null : retVal;
 };
 
-DFA.prototype.loadFromString = function(JSONdescription) {
-  var parsedJSON = JSON.parse(JSONdescription);
-  this.transitions = parsedJSON.transitions;
-  this.startState = parsedJSON.startState;
-  this.acceptStates = parsedJSON.acceptStates;
+DFA.prototype.deserialize = function(json) {
+  this.transitions = json.transitions;
+  this.startState = json.startState;
+  this.acceptStates = json.acceptStates;
   return this;
 };
-DFA.prototype.saveToString = function() {
-  return JSON.stringify({transitions:this.transitions, startState:this.startState, acceptStates:this.acceptStates});
+DFA.prototype.serialize = function() {
+  return {transitions:this.transitions, startState:this.startState, acceptStates:this.acceptStates};
 };
+
+DFA.prototype.loadFromString = function(JSONdescription) {
+  var parsedJSON = JSON.parse(JSONdescription);
+  return this.deserialize(parsedJSON);
+};
+DFA.prototype.saveToString = function() {
+  return JSON.stringify(this.serialize());
+};
+
 
 DFA.prototype.addTransition = function(stateA, character, stateB) {
   if (!this.transitions[stateA]) {this.transitions[stateA] = {};}
