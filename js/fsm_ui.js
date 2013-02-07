@@ -15,6 +15,7 @@ var fsm = (function() {
     jsPlumb.importDefaults({
       Anchors: ["Continuous", "Continuous"],
       ConnectorZIndex: 5,
+      ConnectionsDetachable: false,
       Endpoint: ["Dot", {radius:2}],
       HoverPaintStyle: {strokeStyle:"#d44", lineWidth:2},
       ConnectionOverlays: [
