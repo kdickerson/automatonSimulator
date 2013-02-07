@@ -16,15 +16,23 @@ NFA.prototype.transition = function(state, character) {
   return !retVal ? null : retVal;
 };
 
-NFA.prototype.loadFromString = function(JSONdescription) {
-  var parsedJSON = JSON.parse(JSONdescription);
-  this.transitions = parsedJSON.transitions;
-  this.startState = parsedJSON.startState;
-  this.acceptStates = parsedJSON.acceptStates;
+NFA.prototype.deserialize = function(json) {
+  this.transitions = json.transitions;
+  this.startState = json.startState;
+  this.acceptStates = json.acceptStates;
   return this;
 };
+NFA.prototype.serialize = function() {
+  return {transitions:this.transitions, startState:this.startState, acceptStates:this.acceptStates};
+};
+
+
+NFA.prototype.loadFromString = function(JSONdescription) {
+  var parsedJSON = JSON.parse(JSONdescription);
+  return this.deserialize(parsedJSON);
+};
 NFA.prototype.saveToString = function() {
-  return JSON.stringify({transitions:this.transitions, startState:this.startState, acceptStates:this.acceptStates});
+  return JSON.stringify(this.serialize());
 };
 
 NFA.prototype.addTransition = function(stateA, character, stateB) {
