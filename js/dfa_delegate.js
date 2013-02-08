@@ -11,16 +11,17 @@ var dfa_delegate = (function() {
     var futureSpan = $('<span class="futureInput"></span>').html(status.input.substring(status.inputIndex+1));
     
     if (curState.length > 0) {
-      $('#dfaStatus').css('left', curState.position().left + 4 + 'px')
-        .css('top', curState.position().top - 25 + 'px')
-        .html('').append(doneSpan).append(curSpan).append(futureSpan);
+      var statusBox = $('#dfaStatus');
+      statusBox.html('').append(doneSpan).append(curSpan).append(futureSpan)
+        .css('left', curState.position().left + 4 + 'px')
+        .css('top', curState.position().top - statusBox.outerHeight() - 4 + 'px');
         
-      if ($('#dfaStatus').position().top < 0) { // Flip to bottom
-        $('#dfaStatus').css('top', $('#dfaStatus').position().top + curState.outerHeight() + 29 + 'px');
+      if (statusBox.position().top < 0) { // Flip to bottom
+        statusBox.css('top', curState.position().top + curState.outerHeight() + 4 + 'px');
       }
-      var overscan = $('#dfaStatus').position().left + $('#dfaStatus').outerWidth() + 4 - $('#machineGraph').innerWidth();
+      var overscan = statusBox.position().left + statusBox.outerWidth() + 4 - container.innerWidth();
       if (overscan > 0) { // Push inward
-        $('#dfaStatus').css('left', $('#dfaStatus').position().left - overscan + 'px');
+        statusBox.css('left', statusBox.position().left - overscan + 'px');
       }
     };
   };
@@ -90,6 +91,7 @@ var dfa_delegate = (function() {
     },
     
     debugStop: function() {
+      $('.current').removeClass('current');
       $('#dfaStatus').remove();
       return self;
     },
