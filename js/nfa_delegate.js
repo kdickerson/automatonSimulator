@@ -6,38 +6,38 @@ var nfa_delegate = (function() {
   
   var statusConnectors = [];
 
-  var updateStatusUI = function(status, curState) {
-    // TODO: Test for existing box
-    //  If found, add to it, and reposition
-    //  Position based on actual height, not just magic 25px value
-    //    Backport that change to DFA code
-    
-    var doneSpan = $('<span class="consumedInput"></span>').html(status.input.substring(0, status.inputIndex));
-    var curSpan = $('<span class="currentInput"></span>').html(status.input.substr(status.inputIndex, 1));
-    var futureSpan = $('<span class="futureInput"></span>').html(status.input.substring(status.inputIndex+1));
+  var updateStatusUI = function(status, curState, statusPair) {
+    var doneSpan = $('<span class="consumedInput"></span>').html(status.input.substring(0, statusPair.index));
+    var curSpan = $('<span class="currentInput"></span>').html(status.input.substr(statusPair.index, 1));
+    var futureSpan = $('<span class="futureInput"></span>').html(status.input.substring(statusPair.index+1));
     
     if (curState.length > 0) {
-      $('#dfaStatus').css('left', curState.position().left + 4 + 'px')
-        .css('top', curState.position().top - 25 + 'px')
-        .html('').append(doneSpan).append(curSpan).append(futureSpan);
-        
-      if ($('#dfaStatus').position().top < 0) { // Flip to bottom
-        $('#dfaStatus').css('top', $('#dfaStatus').position().top + curState.outerHeight() + 29 + 'px');
+      var statusBox = $('#nfaStatus_' + curState.attr('id'));
+      if (statusBox.length === 0) {
+        statusBox = $('<div></div>', {id:'nfaStatus_' + curState.attr('id'), 'class':'fsmStatus'}).appendTo(container);
       }
-      var overscan = $('#dfaStatus').position().left + $('#dfaStatus').outerWidth() + 4 - $('#machineGraph').innerWidth();
+      $('<div></div>').append(doneSpan).append(curSpan).append(futureSpan).appendTo(statusBox);
+      statusBox.css('left', curState.position().left + 4 + 'px')
+        .css('top', curState.position().top - statusBox.outerHeight() - 3 + 'px');
+        
+      if (statusBox.position().top < 0) { // Flip to bottom
+        statusBox.css('top', curState.position().top + curState.outerHeight() + 3 + 'px');
+      }
+      var overscan = statusBox.position().left + statusBox.outerWidth() + 4 - container.innerWidth();
       if (overscan > 0) { // Push inward
-        $('#dfaStatus').css('left', $('#dfaStatus').position().left - overscan + 'px');
+        statusBox.css('left', statusBox.position().left - overscan + 'px');
       }
     };
   };
   
   var updateUIForDebug = function() {
-    var status = dfa.status();
+    var status = nfa.status();
     
     $('.current').removeClass('current');
     $.each(statusConnectors, function(index, connection) {
       connection.setPaintStyle(jsPlumb.Defaults.PaintStyle);
     });
+    $('.fsmStatus').remove();
     
     if (status.status === 'Active') {
       $.each(status.stateIndexPairs, function(index, pair) {
@@ -48,7 +48,7 @@ var nfa_delegate = (function() {
             connection.setPaintStyle({strokeStyle:'#0a0'});
           }
         });
-        updateStatusUI(status, curState);
+        updateStatusUI(status, curState, pair);
       });
     }
     return self;
@@ -97,6 +97,7 @@ var nfa_delegate = (function() {
     },
     
     debugStop: function() {
+      $('.current').removeClass('current');
       $('.fsmStatus').remove();
       return self;
     },
@@ -108,11 +109,13 @@ var nfa_delegate = (function() {
       model.nfa = nfa.serialize();
       model.states = {};
       model.transitions = [];
-      $.each(model.dfa.transitions, function(stateA, transition) {
+      $.each(model.nfa.transitions, function(stateA, transition) {
         model.states[stateA] = {};
-        $.each(transition, function(character, stateB) {
-          model.states[stateB] = {};
-          model.transitions.push({stateA:stateA, label:(character || emptyLabel), stateB:stateB});
+        $.each(transition, function(character, states) {
+          $.each(states, function(index, stateB) {
+            model.states[stateB] = {};
+            model.transitions.push({stateA:stateA, label:(character || emptyLabel), stateB:stateB});
+          });
         });
       });
       $.each(model.nfa.acceptStates, function(index, state) {
