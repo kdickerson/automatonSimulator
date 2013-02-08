@@ -88,7 +88,8 @@ DFA.prototype.accepts = function(input) {
 };
 
 DFA.prototype.status = function() {
-  return {state: this.processor.state, 
+  return {
+    state: this.processor.state, 
     input: this.processor.input,
     inputIndex: this.processor.inputIndex,
     nextChar: this.processor.input.substr(this.processor.inputIndex, 1),
