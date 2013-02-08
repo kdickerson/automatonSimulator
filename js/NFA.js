@@ -5,8 +5,9 @@ function NFA(useDefaults) {
   
   this.processor = {
     input: null,
+    inputIndex: 0,
     inputLength: 0,
-    stateIndexPairs: [],
+    states: [],
     status: null,
   };
 }
@@ -95,8 +96,10 @@ NFA.prototype.accepts = function(input) {
 
 NFA.prototype.status = function() {
   return {
-    stateIndexPairs: this.processor.stateIndexPairs, 
+    states: this.processor.states,
     input: this.processor.input,
+    inputIndex: this.processor.inputIndex,
+    nextChar: this.processor.input.substr(this.processor.inputIndex, 1),
     status: this.processor.status
   };
 };
@@ -104,23 +107,24 @@ NFA.prototype.status = function() {
 NFA.prototype.stepInit = function(input) {
   this.processor.input = input;
   this.processor.inputLength = this.processor.input.length;
-  this.processor.stateIndexPairs = [{state:this.startState, index:0}];
+  this.processor.inputIndex = 0;
+  this.processor.states = [this.startState];
   this.processor.status = 'Active';
   this.followEpsilonTransitions();
   return this.updateStatus();
 };
 NFA.prototype.step = function() {
-  var newStateIndexPairs = [];
-  var pair = null;
-  while (pair = this.processor.stateIndexPairs.shift()) {
-    var newStates = this.transition(pair.state, this.processor.input.substr(pair.index, 1));
-    if (newStates) {
-      $.each(newStates, function(index, state) {
-        newStateIndexPairs.push({state:state, index:pair.index+1});
-      });
-    }
+  var newStates = [];
+  var char = this.processor.input.substr(this.processor.inputIndex, 1);
+  var state = null;
+  while (state = this.processor.states.shift()) {
+    var tranStates = this.transition(state, char);
+    if (tranStates) {$.each(tranStates, function(index, tranState) {
+        if (newStates.indexOf(tranState) === -1) {newStates.push(tranState);}
+    });}
   };
-  this.processor.stateIndexPairs = newStateIndexPairs;
+  this.processor.inputIndex++;
+  this.processor.states = newStates;
   this.followEpsilonTransitions();
   return this.updateStatus();
 };
@@ -129,37 +133,37 @@ NFA.prototype.followEpsilonTransitions = function() {
   var changed = true;
   while (changed) {
     changed = false;
-    $.each(self.processor.stateIndexPairs, function(index, pair) {
-      var newStates = self.transition(pair.state, '');
-      if (newStates) {
-        $.each(newStates, function(sIndex, newState) {
+    $.each(self.processor.states, function(index, state) {
+      var newStates = self.transition(state, '');
+      if (newStates) {$.each(newStates, function(sIndex, newState) {
           var match = false;
-          $.each(self.processor.stateIndexPairs, function(oIndex, checkPair) {
-            if (checkPair.state === newState && checkPair.index === pair.index) {
+          $.each(self.processor.states, function(oIndex, checkState) {
+            if (checkState === newState) {
               match = true;
               return false; // break the iteration
             }
           });
           if (!match) {
             changed = true;
-            self.processor.stateIndexPairs.push({state:newState, index:pair.index});
+            self.processor.states.push(newState);
           }
-        });
-      }
+      });}
     });
-  };
+  }
 };
 NFA.prototype.updateStatus = function() {
   var self = this;
-  if (self.processor.stateIndexPairs.length === 0) {
+  if (self.processor.states.length === 0) {
     self.processor.status = 'Reject';
   }
-  $.each(self.processor.stateIndexPairs, function(index, pair) {
-    if (pair.index === self.processor.inputLength && self.acceptStates.indexOf(pair.state) >= 0) {
-      self.processor.status = 'Accept';
-      return false; // break the iteration
-    }
-  })
+  if (self.processor.inputIndex === self.processor.inputLength) {
+   $.each(self.processor.states, function(index, state) {
+      if (self.acceptStates.indexOf(state) >= 0) {
+        self.processor.status = 'Accept';
+        return false; // break the iteration
+      }
+    });
+  }
   return self.processor.status;
 };
 

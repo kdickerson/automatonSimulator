@@ -6,32 +6,33 @@ var nfa_delegate = (function() {
   
   var statusConnectors = [];
 
-  var updateStatusUI = function(status, curState, statusPair) {
-    var doneSpan = $('<span class="consumedInput"></span>').html(status.input.substring(0, statusPair.index));
-    var curSpan = $('<span class="currentInput"></span>').html(status.input.substr(statusPair.index, 1));
-    var futureSpan = $('<span class="futureInput"></span>').html(status.input.substring(statusPair.index+1));
+  var makeStatusBox = function(status) {
+    var doneSpan = $('<span class="consumedInput"></span>').html(status.input.substring(0, status.inputIndex));
+    var curSpan = $('<span class="currentInput"></span>').html(status.input.substr(status.inputIndex, 1));
+    var futureSpan = $('<span class="futureInput"></span>').html(status.input.substring(status.inputIndex+1));
     
-    if (curState.length > 0) {
-      var statusBox = $('#nfaStatus_' + curState.attr('id'));
-      if (statusBox.length === 0) {
-        statusBox = $('<div></div>', {id:'nfaStatus_' + curState.attr('id'), 'class':'fsmStatus'}).appendTo(container);
-      }
-      $('<div></div>').append(doneSpan).append(curSpan).append(futureSpan).appendTo(statusBox);
-      statusBox.css('left', curState.position().left + 4 + 'px')
-        .css('top', curState.position().top - statusBox.outerHeight() - 3 + 'px');
-        
-      if (statusBox.position().top < 0) { // Flip to bottom
-        statusBox.css('top', curState.position().top + curState.outerHeight() + 3 + 'px');
-      }
-      var overscan = statusBox.position().left + statusBox.outerWidth() + 4 - container.innerWidth();
-      if (overscan > 0) { // Push inward
-        statusBox.css('left', statusBox.position().left - overscan + 'px');
-      }
-    };
+    var statusBox = $('<div></div>', {'class':'fsmStatus'});
+    $('<div></div>').append(doneSpan).append(curSpan).append(futureSpan).appendTo(statusBox);
+    return statusBox;
+  };
+
+  var updateStatusUI = function(origStatusBox, curState) {
+    var statusBox = origStatusBox.clone().appendTo(container);
+    statusBox.css('left', curState.position().left + 4 + 'px')
+      .css('top', curState.position().top - statusBox.outerHeight() - 3 + 'px');
+      
+    if (statusBox.position().top < 0) { // Flip to bottom
+      statusBox.css('top', curState.position().top + curState.outerHeight() + 3 + 'px');
+    }
+    var overscan = statusBox.position().left + statusBox.outerWidth() + 4 - container.innerWidth();
+    if (overscan > 0) { // Push inward
+      statusBox.css('left', statusBox.position().left - overscan + 'px');
+    }
   };
   
   var updateUIForDebug = function() {
     var status = nfa.status();
+    var statusBox = makeStatusBox(status);
     
     $('.current').removeClass('current');
     $.each(statusConnectors, function(index, connection) {
@@ -40,15 +41,15 @@ var nfa_delegate = (function() {
     $('.fsmStatus').remove();
     
     if (status.status === 'Active') {
-      $.each(status.stateIndexPairs, function(index, pair) {
-        var curState = $('#' + pair.state).addClass('current');
-        jsPlumb.select({source:pair.state}).each(function(connection) {
-          if (connection.getLabel() === status.input.substr(pair.index, 1)) {
+      $.each(status.states, function(index, state) {
+        var curState = $('#' + state).addClass('current');
+        jsPlumb.select({source:state}).each(function(connection) {
+          if (connection.getLabel() === status.nextChar) {
             statusConnectors.push(connection);
             connection.setPaintStyle({strokeStyle:'#0a0'});
           }
         });
-        updateStatusUI(status, curState, pair);
+        updateStatusUI(statusBox, curState);
       });
     }
     return self;
