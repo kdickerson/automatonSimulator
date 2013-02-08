@@ -206,6 +206,11 @@ var fsm = (function() {
       return self;
     },
     
+    reset: function() {
+      self.setDelegate(delegate);
+      return self;
+    },
+    
     load: function() {
       // TODO: Better UI
       // TODO: UI for loading from browser storage

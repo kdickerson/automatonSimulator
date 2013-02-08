@@ -11,6 +11,10 @@ h1 {
   letter-spacing: 3px;
   word-spacing: 20px;
 }
+  #resetBtn {
+    vertical-align: middle;
+    margin-left: 20px;
+  }
 
   button.delegate {
     margin-left: 10px;
@@ -19,7 +23,7 @@ h1 {
     padding-right: 4px;
     display: inline-block;
     width: 45px;
-    vertical-align: bottom;
+    vertical-align: middle;
     font-size: 10pt;
     letter-spacing: 2px;
     text-align: center;
@@ -228,3 +232,6 @@ img.delete:hover {background-position: 0 -176px;}
 
 #bulkTestBtn img {background-position: 0 -44px;}
 #bulkTestBtn:disabled img {background-position: 0 -66px;}
+
+#resetBtn img {background-position: 0 -308px;}
+#resetBtn:disabled img {background-position: 0 -330px;}
