@@ -225,7 +225,8 @@ var fsm = (function() {
       if (!asString) {return;}
       var model = JSON.parse(asString);
       
-      // Load the delegate
+      // Load the delegate && reset everything
+      self.reset();
       $('button.delegate').each(function() {
         if ($(this).html() === model.type) {
           $(this).click();
