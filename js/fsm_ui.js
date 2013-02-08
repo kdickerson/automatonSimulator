@@ -183,7 +183,8 @@ var fsm = (function() {
       if ($('#stopBtn').prop('disabled')) {
         $('#testResult').html('&nbsp;');
         $('#stopBtn').prop('disabled', false);
-        $('#loadBtn, #testBtn, #bulkTestBtn, #testString').prop('disabled', true);
+        $('#loadBtn, #testBtn, #bulkTestBtn, #testString, #resetBtn').prop('disabled', true);
+        $('button.delegate').prop('disabled', true);
         delegate.debugStart();
         delegate.fsm().stepInit(input);
       } else {
@@ -200,8 +201,14 @@ var fsm = (function() {
     
     debugStop: function() {
       $('#stopBtn').prop('disabled', true);
-      $('#loadBtn, #testBtn, #bulkTestBtn, #debugBtn, #testString').prop('disabled', false);
-      $('.current').removeClass('current');
+      $('#loadBtn, #testBtn, #bulkTestBtn, #debugBtn, #testString, #resetBtn').prop('disabled', false);
+      $('button.delegate').prop('disabled', false).each(function() {
+        switch ($(this).html()) {
+          case 'DFA': if (delegate === dfa_delegate) {$(this).prop('disabled', true);} break;
+          case 'NFA': if (delegate === nfa_delegate) {$(this).prop('disabled', true);} break;
+          case 'PDA': if (delegate === pda_delegate) {$(this).prop('disabled', true);} break;
+        }
+      });
       delegate.debugStop();
       return self;
     },
