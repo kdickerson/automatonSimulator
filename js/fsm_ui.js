@@ -136,8 +136,8 @@ var fsm = (function() {
     },
     
     addState: function() {
-      // Add state to UI
-      var state = makeState('s' + stateCounter++);
+      while ($('#s'+stateCounter).length > 0) {++stateCounter;} // Prevent duplicate states after loading
+      var state = makeState('s' + stateCounter);
       container.append(state);
       jsPlumb.draggable(state, {containment:"parent"});
       makeStatePlumbing(state);
