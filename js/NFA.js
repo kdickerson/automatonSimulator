@@ -199,11 +199,11 @@ NFA.runTests = function() {
   assert(!myNFA.accepts('ab'), 'Reject ab');
   
   var myNFA_asString = myNFA.saveToString();
-  var otherDFA = new NFA().loadFromString(myNFA_asString);
-  assert(myNFA_asString === otherDFA.saveToString(), 'Save, Load, Save has no changes');
-  assert(!otherDFA.accepts('ab'), 'Loaded DFA rejects ab');
-  assert(!otherDFA.accepts(''), 'Loaded DFA rejects [empty string]');
-  assert(!otherDFA.accepts('a'), 'Loaded DFA rejects a');
+  var otherNFA = new NFA().loadFromString(myNFA_asString);
+  assert(myNFA_asString === otherNFA.saveToString(), 'Save, Load, Save has no changes');
+  assert(!otherNFA.accepts('ab'), 'Loaded DFA rejects ab');
+  assert(!otherNFA.accepts(''), 'Loaded DFA rejects [empty string]');
+  assert(!otherNFA.accepts('a'), 'Loaded DFA rejects a');
   
   myNFA = new NFA(true)
     .addTransition('start', 'a', 's1')
