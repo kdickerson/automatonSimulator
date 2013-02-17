@@ -46,12 +46,19 @@
       <div id="machineGraph">
           <div id="dfaStatus" style="display:none;"></div>
       </div>
-      <h5 id="bulkResultHeader" style="text-align:left;">Test Results:</h5>
+      <h5 id="bulkResultHeader" style="text-align:left;">
+        Test Results:
+        <span id="fsmDebugInputStatus" class="fsmStatus" style="display:none;">
+          <span class="consumedInput"></span>
+          <span class="currentInput"></span>
+          <span class="futureInput"></span>
+        </span>
+      </h5>
       <div id="resultConsole"></div>
     </div>
         
     <div id="footer">
-      Kyle Dickerson -- Tools:
+      <a href="mailto:kyle.dickerson@gmail.com?Subject=Automaton+Simulator">Kyle Dickerson</a> -- Tools:
         <a href="http://jquery.com/">jQuery</a>&nbsp;&nbsp;
         <a href="http://www.jsplumb.org/jquery/demo.html">jsPlumb</a>&nbsp;&nbsp;
         Icons:

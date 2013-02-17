@@ -5,27 +5,6 @@ var dfa_delegate = (function() {
   
   var statusConnector = null;
 
-  var updateStatusUI = function(status, curState) {
-    var doneSpan = $('<span class="consumedInput"></span>').html(status.input.substring(0, status.inputIndex));
-    var curSpan = $('<span class="currentInput"></span>').html(status.input.substr(status.inputIndex, 1));
-    var futureSpan = $('<span class="futureInput"></span>').html(status.input.substring(status.inputIndex+1));
-    
-    if (curState.length > 0) {
-      var statusBox = $('#dfaStatus');
-      statusBox.html('').append(doneSpan).append(curSpan).append(futureSpan)
-        .css('left', curState.position().left + 4 + 'px')
-        .css('top', curState.position().top - statusBox.outerHeight() - 4 + 'px');
-        
-      if (statusBox.position().top < 0) { // Flip to bottom
-        statusBox.css('top', curState.position().top + curState.outerHeight() + 4 + 'px');
-      }
-      var overscan = statusBox.position().left + statusBox.outerWidth() + 4 - container.innerWidth();
-      if (overscan > 0) { // Push inward
-        statusBox.css('left', statusBox.position().left - overscan + 'px');
-      }
-    };
-  };
-  
   var updateUIForDebug = function() {
     var status = dfa.status();
     
@@ -40,7 +19,6 @@ var dfa_delegate = (function() {
           connection.setPaintStyle({strokeStyle:'#0a0'});
         }
       });
-      updateStatusUI(status, curState);
     }
     return self;
   };
@@ -86,13 +64,11 @@ var dfa_delegate = (function() {
     },
     
     debugStart: function() {
-      $('<div id="dfaStatus" class="fsmStatus"></div>').appendTo(container);
       return self;
     },
     
     debugStop: function() {
       $('.current').removeClass('current');
-      $('#dfaStatus').remove();
       return self;
     },
     

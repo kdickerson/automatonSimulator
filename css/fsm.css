@@ -78,30 +78,6 @@ h5 {
     cursor: default;
   }
 
-  .fsmStatus {
-    position: absolute;
-    border: 1px solid #aaa;
-    background-color: #fff;
-    padding-left: 2px;
-    padding-right: 2px;
-    font-size: 9pt;
-    letter-spacing: 2px;
-    z-index: 100;
-    border-radius: 2px;
-    opacity: 0.8;
-  }
-    .consumedInput {
-      text-decoration: line-through;
-    }
-    .currentInput {
-      font-weight: bold;
-      margin-left: 4px;
-      margin-right: 4px;
-    }
-    .futureInput {
-      font-style: italic;
-    }
-
   div.state {
     position: absolute;
     width: 100px;
@@ -148,11 +124,42 @@ h5 {
       line-height: 20px; 
       text-align: center;
       color: #aaa;
+      z-index: 100;
     }
 
     div.delete:hover {
       cursor: pointer;
     }
+
+#fsmDebugInputStatus {
+  display: inline-block;
+  margin-left: 250px;
+}
+
+  span.consumedInput {
+    text-decoration: line-through;
+  }
+  span.currentInput {
+    font-weight: bold;
+    margin-left: 4px;
+    margin-right: 4px;
+  }
+  span.futureInput {
+    font-style: italic;
+  }
+
+.fsmStatus {
+  padding-left: 2px;
+  padding-right: 2px;
+  font-size: 9pt;
+  letter-spacing: 2px;
+}
+
+#machineGraph .fsmStatus {
+  border: 1px solid #aaa;
+  border-radius: 2px;
+}
+
 
 #resultConsole {
   font-size: small;

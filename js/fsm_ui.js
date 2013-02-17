@@ -4,6 +4,12 @@ var fsm = (function() {
   var container = null;
   var stateCounter = 0;
   
+  var updateStatusUI = function(status) {
+    $('#fsmDebugInputStatus span.consumedInput').html(status.input.substring(0, status.inputIndex));
+    $('#fsmDebugInputStatus span.currentInput').html(status.input.substr(status.inputIndex, 1));
+    $('#fsmDebugInputStatus span.futureInput').html(status.input.substring(status.inputIndex+1));
+  };
+  
   var connectionClicked = function(connection) {
     delegate.fsm().removeTransition(connection.sourceId, connection.getLabel(), connection.targetId);
     jsPlumb.detach(connection);
@@ -185,13 +191,15 @@ var fsm = (function() {
         $('#stopBtn').prop('disabled', false);
         $('#loadBtn, #testBtn, #bulkTestBtn, #testString, #resetBtn').prop('disabled', true);
         $('button.delegate').prop('disabled', true);
+        $('#fsmDebugInputStatus').show();
         delegate.debugStart();
         delegate.fsm().stepInit(input);
       } else {
         delegate.fsm().step();
       }
-      delegate.updateUI();
       var status = delegate.fsm().status();
+      updateStatusUI(status);
+      delegate.updateUI();
       if (status.status !== 'Active') {
         $('#testResult').html(status.status === 'Accept' ? 'Accepted' : 'Rejected').effect('highlight', {color: status.status === 'Accept' ? '#bfb' : '#fbb'}, 1000);
         $('#debugBtn').prop('disabled', true);
@@ -200,6 +208,7 @@ var fsm = (function() {
     },
     
     debugStop: function() {
+      $('#fsmDebugInputStatus').hide();
       $('#stopBtn').prop('disabled', true);
       $('#loadBtn, #testBtn, #bulkTestBtn, #debugBtn, #testString, #resetBtn').prop('disabled', false);
       $('button.delegate').prop('disabled', false).each(function() {
