@@ -158,5 +158,7 @@ DFA.runTests = function() {
   myDFA.removeTransitions('s1');
   assert(!myDFA.accepts('ad'), 'Reject ad');
   myDFA.addTransition('s1', 'e', 'accept');
+  // s1 should be gone, so we shouldn't be able to pass through it
+  // This test is to check if it really got removed from all inbound transitions
   assert(!myDFA.accepts('ae'), 'Reject ae');
 }
