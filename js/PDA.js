@@ -1,4 +1,5 @@
 function PDA(useDefaults) {
+  "use strict";
   this.transitions = {}; // state -> inputChar -> stackPopChar -> stateStackPushCharPairs {state:'', stackPushChar:''}
   this.startState = useDefaults ? 'start' : null;
   this.acceptStates = useDefaults ? ['accept'] : [];
@@ -11,6 +12,9 @@ function PDA(useDefaults) {
     status: null,
   };
 }
+
+$(function() { // wrap in a function so we can declare "use strict" once
+  "use strict";
 
 // Returns true if it was added, false if not
 PDA.prototype.addToIfUnique = function(stateStackPairs, newSSP) {
@@ -288,14 +292,14 @@ PDA.runTests = function() {
   
   // Tests for NFA
   myPDA = new PDA(true)
-    .addTransition('start', '', '', '', 'accept')
+    .addTransition('start', '', '', '', 'accept');
   assert(myPDA.accepts(''), 'Accept [empty string] through epsilon');
   
   myPDA.removeTransition('start', '', '', '', 'accept')
     .addTransition('start', '', '', '', 'b1')
     .addTransition('start', '', '', '', 'a1')
     .addTransition('a1', 'a', '', '', 'accept')
-    .addTransition('b1', 'b', '', '', 'accept')
+    .addTransition('b1', 'b', '', '', 'accept');
   assert(myPDA.accepts('a'), 'Accept a through epsilon');
   assert(myPDA.accepts('b'), 'Accept b through epsilon');
   assert(!myPDA.accepts(''), 'Reject [empty string]');
@@ -304,10 +308,16 @@ PDA.runTests = function() {
   myPDA.addTransition('b1', '', '', '', 'b2')
     .addTransition('b2', '', '', '', 'b3')
     .addTransition('b3', 'b', '', '', 'b3')
-    .addTransition('b3', 'b', '', '', 'accept')
+    .addTransition('b3', 'b', '', '', 'accept');
   assert(myPDA.accepts('b'), 'Accept b through epsilon');
   assert(myPDA.accepts('bbbb'), 'Accept bbbb through multiple epsilons');
   assert(!myPDA.accepts('aa'), 'Reject aa');
   
   // Tests specifically for PDA
+  myPDA= new PDA(true)
+    .addTransition('start', 'A', 'A', '', 's1')
+    .addTransition('s1', 'A', '', 'A', 'accept');
+  assert(myPDA.accepts('AA'), 'Accept AA');
 }
+
+});
