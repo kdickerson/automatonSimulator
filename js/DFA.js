@@ -1,4 +1,5 @@
 function DFA(useDefaults) {
+  "use strict";
   this.transitions = {};
   this.startState = useDefaults ? 'start' : null;
   this.acceptStates = useDefaults ? ['accept'] : [];
@@ -11,6 +12,9 @@ function DFA(useDefaults) {
     status: null,
   };
 }
+
+$(function() { // wrap in a function so we can declare "use strict" once
+  "use strict";
 
 DFA.prototype.transition = function(state, character) {
   var retVal = (this.transitions[state]) ? this.transitions[state][character] : null;
@@ -162,3 +166,5 @@ DFA.runTests = function() {
   // This test is to check if it really got removed from all inbound transitions
   assert(!myDFA.accepts('ae'), 'Reject ae');
 }
+
+});

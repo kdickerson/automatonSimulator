@@ -1,4 +1,5 @@
 function NFA(useDefaults) {
+  "use strict";
   this.transitions = {};
   this.startState = useDefaults ? 'start' : null;
   this.acceptStates = useDefaults ? ['accept'] : [];
@@ -11,6 +12,9 @@ function NFA(useDefaults) {
     status: null,
   };
 }
+
+$(function() { // wrap in a function so we can declare "use strict" once
+  "use strict";
 
 NFA.prototype.transition = function(state, character) {
   var retVal = (this.transitions[state]) ? this.transitions[state][character] : null;
@@ -221,14 +225,14 @@ NFA.runTests = function() {
   
   // Tests specifically for NFA
   myNFA = new NFA(true)
-    .addTransition('start', '', 'accept')
+    .addTransition('start', '', 'accept');
   assert(myNFA.accepts(''), 'Accept [empty string] through epsilon');
   
   myNFA.removeTransition('start', '', 'accept')
     .addTransition('start', '', 'b1')
     .addTransition('start', '', 'a1')
     .addTransition('a1', 'a', 'accept')
-    .addTransition('b1', 'b', 'accept')
+    .addTransition('b1', 'b', 'accept');
   assert(myNFA.accepts('a'), 'Accept a through epsilon');
   assert(myNFA.accepts('b'), 'Accept b through epsilon');
   assert(!myNFA.accepts(''), 'Reject [empty string]');
@@ -237,9 +241,10 @@ NFA.runTests = function() {
   myNFA.addTransition('b1', '', 'b2')
     .addTransition('b2', '', 'b3')
     .addTransition('b3', 'b', 'b3')
-    .addTransition('b3', 'b', 'accept')
+    .addTransition('b3', 'b', 'accept');
   assert(myNFA.accepts('b'), 'Accept b through epsilon');
   assert(myNFA.accepts('bbbb'), 'Accept bbbb through multiple epsilons');
   assert(!myNFA.accepts('aa'), 'Reject aa');
-  
 }
+
+});
