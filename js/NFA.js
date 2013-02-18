@@ -123,7 +123,7 @@ NFA.prototype.step = function() {
         if (newStates.indexOf(tranState) === -1) {newStates.push(tranState);}
     });}
   };
-  this.processor.inputIndex++;
+  ++this.processor.inputIndex;
   this.processor.states = newStates;
   this.followEpsilonTransitions();
   return this.updateStatus();
