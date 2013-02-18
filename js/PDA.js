@@ -12,6 +12,30 @@ function PDA(useDefaults) {
   };
 }
 
+// Returns true if it was added, false if not
+PDA.prototype.addToIfUnique = function(stateStackPairs, newSSP) {
+  var match = false;
+  var self = this;
+  $.each(stateStackPairs, function(idx, ssp) {
+    if (self.stateStackPairsEqual(ssp, newSSP)) {match = true; return false;} // return false breaks iteration
+  });
+  if (!match) {stateStackPairs.push(newSSP); return true;}
+  return false;
+};
+
+PDA.prototype.stateStackPairsEqual = function(ssp1, ssp2) {
+  if (ssp1.state === ssp2.state) {
+    if (ssp1.stack.length === ssp2.stack.length) {
+      var stackLength = ssp1.stack.length;
+      for (var i=0; i<stackLength; ++i) {
+        if (ssp1.stack[i] !== ssp2.stack[i]) {return false;}
+      }
+      return true;
+    }
+  }
+  return false;
+};
+
 PDA.prototype.transition = function(state, inputChar, stack) {
   var newStateStackPairs = [];
   var tmp = (this.transitions[state]) ? this.transitions[state][inputChar] : null;
@@ -89,7 +113,7 @@ PDA.prototype.removeTransitions = function(state) {
     $.each(inputCharBase, function(inputChar, stackPopBase) {
       $.each(stackPopBase, function(stackPopChar, stateStackPairs) {
         var matchPushChar = null;
-        $.each(this.transitions[stateA][character][stackPopChar], function(index, stateStackPair) {
+        $.each(self.transitions[stateA][inputChar][stackPopChar], function(index, stateStackPair) {
           if (stateStackPair.state === state) {
             matchPushChar = stateStackPair.stackPushChar; return false; // return false breaks the iteration
           }
@@ -106,12 +130,12 @@ PDA.prototype.removeTransitions = function(state) {
 PDA.prototype.removeTransition = function(stateA, inputChar, stackPopChar, stackPushChar, stateB) {
   if (this.hasTransition(stateA, inputChar, stackPopChar, stackPushChar, stateB)) {
     var stateStackIndex = null;
-    $.each(this.transitions[stateA][character][stackPopChar], function(index, stateStackPair) {
+    $.each(this.transitions[stateA][inputChar][stackPopChar], function(index, stateStackPair) {
       if (stateStackPair.state === stateB && stateStackPair.stackPushChar === stackPushChar) {
         stateStackIndex = index; return false; // return false breaks the iteration
       }
     });
-    this.transitions[stateA][character][stackPopChar].splice(stateStackIndex, 1);
+    this.transitions[stateA][inputChar][stackPopChar].splice(stateStackIndex, 1);
   }
   return this;
 };
@@ -159,21 +183,20 @@ PDA.prototype.stepInit = function(input) {
   return this.updateStatus();
 };
 
-
-// TODO: !!!!!!   From here down need to be converted from NFA to PDA
 PDA.prototype.step = function() {
+  var self = this;
   var newStateStackPairs = [];
   var char = this.processor.input.substr(this.processor.inputIndex, 1);
-  var state = null;
-  while (state = this.processor.states.shift()) {
-    var tranStates = this.transition(state, char);
-    if (tranStates) {$.each(tranStates, function(index, tranState) {
-        if (newStates.indexOf(tranState) === -1) {newStates.push(tranState);}
-    });}
+  var stateStackPair = null;
+  while (stateStackPair = this.processor.stateStackPairs.shift()) {
+    var tranStateStackPairs = this.transition(stateStackPair.state, char, stateStackPair.stack);
+    $.each(tranStateStackPairs, function(index, tranStateStackPair) {
+        self.addToIfUnique(newStateStackPairs, tranStateStackPair);
+    });
   };
-  this.processor.inputIndex++;
-  this.processor.states = newStates;
-  this.followEpsilonTransitions();
+  ++this.processor.inputIndex;
+  this.processor.stateStackPairs = newStateStackPairs;
+  this.followEpsilonInputTransitions();
   return this.updateStatus();
 };
 PDA.prototype.followEpsilonInputTransitions = function() {
@@ -181,32 +204,24 @@ PDA.prototype.followEpsilonInputTransitions = function() {
   var changed = true;
   while (changed) {
     changed = false;
-    $.each(self.processor.states, function(index, state) {
-      var newStates = self.transition(state, '');
-      if (newStates) {$.each(newStates, function(sIndex, newState) {
-          var match = false;
-          $.each(self.processor.states, function(oIndex, checkState) {
-            if (checkState === newState) {
-              match = true;
-              return false; // break the iteration
-            }
-          });
-          if (!match) {
-            changed = true;
-            self.processor.states.push(newState);
-          }
-      });}
+    $.each(self.processor.stateStackPairs, function(index, ssp) {
+      var newSSPs = self.transition(ssp.state, '', ssp.stack);
+      $.each(newSSPs, function(sIndex, newSSP) {
+        if (self.addToIfUnique(self.processor.stateStackPairs, newSSP)) {
+          changed = true;
+        }
+      });
     });
   }
 };
 PDA.prototype.updateStatus = function() {
   var self = this;
-  if (self.processor.states.length === 0) {
+  if (self.processor.stateStackPairs.length === 0) {
     self.processor.status = 'Reject';
   }
   if (self.processor.inputIndex === self.processor.inputLength) {
-   $.each(self.processor.states, function(index, state) {
-      if (self.acceptStates.indexOf(state) >= 0) {
+   $.each(self.processor.stateStackPairs, function(index, ssp) {
+      if (self.acceptStates.indexOf(ssp.state) >= 0) {
         self.processor.status = 'Accept';
         return false; // break the iteration
       }
@@ -219,10 +234,10 @@ PDA.runTests = function() {
   function assert(outcome, description) {window.console && console.log((outcome ? 'Pass:' : 'FAIL:'),  description);}
 
   var myPDA = new PDA(true)
-    .addTransition('start', 'a', 's1')
-    .addTransition('s1', 'a', 's2')
-    .addTransition('s1', 'c', 'end2')
-    .addTransition('s2', 'b', 'accept')
+    .addTransition('start', 'a', '', '', 's1')
+    .addTransition('s1', 'a', '', '', 's2')
+    .addTransition('s1', 'c', '', '', 'end2')
+    .addTransition('s2', 'b', '', '', 'accept')
     .addAcceptState('end2');
   
   // Same tests as DFA, should respond identically
@@ -234,7 +249,7 @@ PDA.runTests = function() {
   assert(!myPDA.accepts('ab'), 'Reject ab');
 
   console.log('Remove transition');
-  myPDA.removeTransition('s1', 'c', 'end2');
+  myPDA.removeTransition('s1', 'c', '', '', 'end2');
   assert(!myPDA.accepts('ac'), 'Reject ac');
 
   console.log('Change start state');
@@ -254,36 +269,38 @@ PDA.runTests = function() {
   assert(!otherDFA.accepts('a'), 'Loaded DFA rejects a');
   
   myPDA = new PDA(true)
-    .addTransition('start', 'a', 's1')
-    .addTransition('s1', 'b', 's2')
-    .addTransition('s2', 'c', 'start')
-    .addTransition('s1', 'd', 'accept');
+    .addTransition('start', 'a', '', '', 's1')
+    .addTransition('s1', 'b', '', '', 's2')
+    .addTransition('s2', 'c', '', '', 'start')
+    .addTransition('s1', 'd', '', '', 'accept');
   assert(myPDA.accepts('ad'), 'Accept ad');
   console.log('Remove transitions to/from s1');
   myPDA.removeTransitions('s1');
   assert(!myPDA.accepts('ad'), 'Reject ad');
-  myPDA.addTransition('s1', 'e', 'accept');
+  myPDA.addTransition('s1', 'e', '', '', 'accept');
+  // s1 should be gone, so we shouldn't be able to pass through it
+  // This test is to check if it really got removed from all inbound transitions
   assert(!myPDA.accepts('ae'), 'Reject ae');
   
   // Tests for NFA
   myPDA = new PDA(true)
-    .addTransition('start', '', 'accept')
+    .addTransition('start', '', '', '', 'accept')
   assert(myPDA.accepts(''), 'Accept [empty string] through epsilon');
   
-  myPDA.removeTransition('start', '', 'accept')
-    .addTransition('start', '', 'b1')
-    .addTransition('start', '', 'a1')
-    .addTransition('a1', 'a', 'accept')
-    .addTransition('b1', 'b', 'accept')
+  myPDA.removeTransition('start', '', '', '', 'accept')
+    .addTransition('start', '', '', '', 'b1')
+    .addTransition('start', '', '', '', 'a1')
+    .addTransition('a1', 'a', '', '', 'accept')
+    .addTransition('b1', 'b', '', '', 'accept')
   assert(myPDA.accepts('a'), 'Accept a through epsilon');
   assert(myPDA.accepts('b'), 'Accept b through epsilon');
   assert(!myPDA.accepts(''), 'Reject [empty string]');
   assert(!myPDA.accepts('bbbb'), 'Reject bbbb');
   
-  myPDA.addTransition('b1', '', 'b2')
-    .addTransition('b2', '', 'b3')
-    .addTransition('b3', 'b', 'b3')
-    .addTransition('b3', 'b', 'accept')
+  myPDA.addTransition('b1', '', '', '', 'b2')
+    .addTransition('b2', '', '', '', 'b3')
+    .addTransition('b3', 'b', '', '', 'b3')
+    .addTransition('b3', 'b', '', '', 'accept')
   assert(myPDA.accepts('b'), 'Accept b through epsilon');
   assert(myPDA.accepts('bbbb'), 'Accept bbbb through multiple epsilons');
   assert(!myPDA.accepts('aa'), 'Reject aa');
