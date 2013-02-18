@@ -122,7 +122,7 @@ PDA.prototype.removeTransitions = function(state) {
             matchPushChar = stateStackPair.stackPushChar; return false; // return false breaks the iteration
           }
         });
-        if (matchPushChar) {
+        if (matchPushChar !== null) {
           self.removeTransition(stateA, inputChar, stackPopChar, matchPushChar, state)
         }
       });
