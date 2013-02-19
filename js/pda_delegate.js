@@ -21,10 +21,12 @@ var pda_delegate = (function() {
     if (status.status === 'Active') {
       $.each(status.stateStackPairs, function(index, ssp) {
         var curState = $('#' + ssp.state).addClass('current');
-        var sspLabelParts = makeConnectionLabel(status.nextChar, ssp.stack[0], '').split(',');
+        var sspLabelParts = makeConnectionLabel(status.nextChar, ssp.stack[ssp.stack.length-1], '').split(',');
         jsPlumb.select({source:ssp.state}).each(function(connection) {
-          var connLabelParts = connection.getLabel().split(','); // Don't care about the pushChar here
-          if (connLabelParts[0] === sspLabelParts[0] && connLabelParts[1] === sspLabelParts[1]) {
+          var connLabelParts = connection.getLabel().split(',');
+          // Don't care about the pushChar here
+          if (connLabelParts[0] === sspLabelParts[0] && 
+                (connLabelParts[1] === sspLabelParts[1] || connLabelParts[1] === emptyLabel)) {
             statusConnectors.push(connection);
             connection.setPaintStyle({strokeStyle:'#0a0'});
           }
