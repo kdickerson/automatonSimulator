@@ -105,7 +105,7 @@ var pda_delegate = (function() {
           $.each(popCharBase, function(popChar, stateStackPairs) {
             $.each(stateStackPairs, function(idx, ssp) {
               model.states[ssp.state] = {};
-              model.transitions.push({stateA:stateA, label:makeConnectionLabel(inputChar, popChar, pushChar), stateB:ssp.state});
+              model.transitions.push({stateA:stateA, label:makeConnectionLabel(inputChar, popChar, ssp.stackPushChar), stateB:ssp.state});
             });
           });
         });
