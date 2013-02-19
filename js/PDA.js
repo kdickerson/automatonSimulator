@@ -291,6 +291,7 @@ PDA.runTests = function() {
   assert(!myPDA.accepts('ae'), 'Reject ae');
   
   // Tests for NFA
+  console.log('Tests for NFA');
   myPDA = new PDA(true)
     .addTransition('start', '', '', '', 'accept');
   assert(myPDA.accepts(''), 'Accept [empty string] through epsilon');

@@ -224,6 +224,7 @@ NFA.runTests = function() {
   assert(!myNFA.accepts('ae'), 'Reject ae');
   
   // Tests specifically for NFA
+  console.log('Tests for NFA');
   myNFA = new NFA(true)
     .addTransition('start', '', 'accept');
   assert(myNFA.accepts(''), 'Accept [empty string] through epsilon');
