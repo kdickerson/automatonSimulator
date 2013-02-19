@@ -315,8 +315,8 @@ PDA.runTests = function() {
   
   // Tests specifically for PDA
   myPDA= new PDA(true)
-    .addTransition('start', 'A', 'A', '', 's1')
-    .addTransition('s1', 'A', '', 'A', 'accept');
+    .addTransition('start', 'A', '', 'A', 's1')
+    .addTransition('s1', 'A', 'A', '', 'accept');
   assert(myPDA.accepts('AA'), 'Accept AA');
 }
 
