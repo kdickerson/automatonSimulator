@@ -2,7 +2,7 @@ var pda_delegate = (function() {
   var self = null;
   var pda = null;
   var container = null;
-  var emptyLabel = '[empty]';
+  var emptyLabel = 'ϵ';
   
   var statusConnectors = [];
   

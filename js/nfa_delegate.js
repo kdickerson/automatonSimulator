@@ -2,7 +2,7 @@ var nfa_delegate = (function() {
   var self = null;
   var nfa = null;
   var container = null;
-  var emptyLabel = '[empty]';
+  var emptyLabel = 'ϵ';
   
   var statusConnectors = [];
   
