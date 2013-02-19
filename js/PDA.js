@@ -315,10 +315,30 @@ PDA.runTests = function() {
   assert(!myPDA.accepts('aa'), 'Reject aa');
   
   // Tests specifically for PDA
+  console.log('Tests for PDA');
   myPDA= new PDA(true)
     .addTransition('start', 'A', '', 'A', 's1')
     .addTransition('s1', 'A', 'A', '', 'accept');
   assert(myPDA.accepts('AA'), 'Accept AA');
+  
+  console.log('Even-Length Palindrome Tester PDA');
+  myPDA = new PDA(true)
+    .addTransition('start', '', '', '#', 'push')
+    .addTransition('push', 'a', '', 'a', 'push')
+    .addTransition('push', 'b', '', 'b', 'push')
+    .addTransition('push', 'a', 'a', '', 'pop')
+    .addTransition('push', 'b', 'b', '', 'pop')
+    .addTransition('pop', 'a', 'a', '', 'pop')
+    .addTransition('pop', 'b', 'b', '', 'pop')
+    .addTransition('pop', '', '#', '', 'accept');
+  assert(myPDA.accepts('aa'), 'Accept aa');
+  assert(myPDA.accepts('abba'), 'Accept abba');
+  assert(myPDA.accepts('baaaab'), 'Accept baaaab');
+  assert(myPDA.accepts('bbbaabbb'), 'Accept bbbaabbb');
+  assert(!myPDA.accepts('a'), 'Reject a');
+  assert(!myPDA.accepts('b'), 'Reject b');
+  assert(!myPDA.accepts('aba'), 'Reject aba');
+  assert(!myPDA.accepts(''), 'Reject [empty]');
 }
 
 });
