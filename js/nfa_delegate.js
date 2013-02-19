@@ -50,8 +50,8 @@ var nfa_delegate = (function() {
       inputChar = (inputChar && inputChar.length > 0) ? inputChar[0] : inputChar;
       if (inputChar === null || nfa.hasTransition(info.sourceId, inputChar, info.targetId)) {
         jsPlumb.detach(info.connection);
-        if (inputChar) {
-          alert(info.sourceId + " already has a transition for " + inputChar);
+        if (inputChar !== null) {
+          alert(info.sourceId + " already has a transition to " + info.targetId + " on " + (inputChar || emptyLabel));
         }
         return;
       } 
