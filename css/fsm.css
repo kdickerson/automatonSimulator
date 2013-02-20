@@ -156,10 +156,17 @@ h5 {
 }
 
 #machineGraph .fsmStatus {
+  position: absolute;
   border: 1px solid #aaa;
-  border-radius: 2px;
+  border-radius: 4px;
+  padding: 2px;
 }
 
+  span.stackBody {
+    border-left: 1px solid #aaa;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+  }
 
 #resultConsole {
   font-size: small;

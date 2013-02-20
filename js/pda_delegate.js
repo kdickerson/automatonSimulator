@@ -10,10 +10,39 @@ var pda_delegate = (function() {
     return (inputChar || emptyLabel) + ',' + (popChar || emptyLabel) + ',' + (pushChar || emptyLabel);
   };
   
+  var addStackDataAndGetStackBox = function(stackStatePair) {
+    var stackSpan = $('<span class="futureInput stackBody"></span>').html(stackStatePair.stack.slice(0,-1).join(''));
+    var headSpan = $('<span class="currentInput"></span>').html(stackStatePair.stack[stackStatePair.stack.length-1]);
+    var stackBoxId = stackStatePair.state + '_stackBox';
+    var stackBox = $('#' + stackBoxId);
+    if (stackBox.length === 0) {
+      var stackBox = $('<div></div>', {id:stackBoxId, 'class':'fsmStatus'}).appendTo(container);
+    }
+    $('<div></div>', {style:'margin-bottom:1px'}).append(stackSpan).append(headSpan).appendTo(stackBox);
+    return stackBox;
+  };
+
+  var updateStacksUI = function(curStateEl, stateStackPair) {
+    var stackBox = addStackDataAndGetStackBox(stateStackPair);
+    
+    stackBox.css('left', curStateEl.position().left + 4 + 'px')
+      .css('top', curStateEl.position().top - stackBox.outerHeight() - 3 + 'px');
+      
+    if (stackBox.position().top < 0) { // Flip to bottom
+      stackBox.css('top', curStateEl.position().top + curStateEl.outerHeight() + 3 + 'px');
+    }
+    var overscan = stackBox.position().left + stackBox.outerWidth() + 4 - container.innerWidth();
+    if (overscan > 0) { // Push inward
+      stackBox.css('left', stackBox.position().left - overscan + 'px');
+    }
+  };
+  
   var updateUIForDebug = function() {
     var status = pda.status();
     
+    // Cleanup previous UI data
     $('.current').removeClass('current');
+    container.find('.fsmStatus').remove();
     $.each(statusConnectors, function(index, connection) {
       connection.setPaintStyle(jsPlumb.Defaults.PaintStyle);
     });
@@ -21,6 +50,9 @@ var pda_delegate = (function() {
     if (status.status === 'Active') {
       $.each(status.stateStackPairs, function(index, ssp) {
         var curState = $('#' + ssp.state).addClass('current');
+        updateStacksUI(curState, ssp);
+        
+        // Highlight transitions that will be traversed next
         var sspLabelParts = makeConnectionLabel(status.nextChar, ssp.stack[ssp.stack.length-1], '').split(',');
         jsPlumb.select({source:ssp.state}).each(function(connection) {
           var connLabelParts = connection.getLabel().split(',');
@@ -91,6 +123,7 @@ var pda_delegate = (function() {
     
     debugStop: function() {
       $('.current').removeClass('current');
+      container.find('.fsmStatus').remove();
       return self;
     },
     
