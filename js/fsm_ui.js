@@ -18,6 +18,11 @@ var fsm = (function() {
   var domReadyInit = function() {
     self.setGraphContainer($('#machineGraph'));
     
+    $(window).resize(function() {
+      container.height($(window).height() - $('#mainHolder h1').outerHeight() - $('#footer').outerHeight() - $('#bulkResultHeader').outerHeight() - $('#resultConsole').outerHeight() - 30 + 'px');
+    });
+    $(window).resize();
+    
     jsPlumb.importDefaults({
       Anchors: ["Continuous", "Continuous"],
       ConnectorZIndex: 5,

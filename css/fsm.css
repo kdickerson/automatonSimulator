@@ -66,7 +66,7 @@ h5 {
 }
 
 #machineGraph {
-  height: 330px;
+  min-height: 330px;
   border: 1px solid #aaa;
   position: relative;
 }
