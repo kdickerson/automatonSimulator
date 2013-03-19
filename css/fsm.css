@@ -199,6 +199,14 @@ h5 {
   margin-top: 2px;
 }
 
+/* Dialog styling */
+span.tranStart:after {
+  content:"=====";
+}
+span.tranEnd:before {
+  content:"====>";
+}
+
 /* jsPlumb z-index styles */
 ._jsPlumb_connector {
   z-index: 3;

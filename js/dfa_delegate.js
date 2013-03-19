@@ -2,6 +2,8 @@ var dfa_delegate = (function() {
   var self = null;
   var dfa = null;
   var container = null;
+  var dialogDiv = null;
+  var dialogActiveInfo = null;
   
   var statusConnector = null;
 
@@ -23,10 +25,69 @@ var dfa_delegate = (function() {
     return self;
   };
 
+  var dialogSave = function() {
+    var inputChar = $('#dialog_readCharTxt').val();
+    if (inputChar.length > 1) {inputChar = inputChar[0];}
+    if (inputChar.length === 0 || dfa.hasTransition(dialogActiveInfo.sourceId, inputChar)) {
+      if (inputChar.length === 0) {
+        alert("Deterministic Finite Automaton cannot have empty-string transition.");
+      } else {
+        alert(dialogActiveInfo.sourceId + " already has a transition for " + inputChar);
+      }
+      return;
+    }
+    dialogActiveInfo.connection.setLabel(inputChar);
+    dfa.addTransition(dialogActiveInfo.sourceId, inputChar, dialogActiveInfo.targetId);  
+    dialogActiveInfo = null;
+    dialogDiv.dialog( "close" );
+  };
+
+  var dialogCancel = function() {
+    dialogDiv.dialog( "close" );
+  };
+  
+  var dialogClose = function() {
+    if (dialogActiveInfo) {
+      jsPlumb.detach(dialogActiveInfo.connection);
+      dialogActiveInfo = null;
+    }
+  };
+
+  var makeDialog = function() {
+    dialogDiv = $('<div></div>', {style:'text-align:center;'});
+    $('<span></span>', {id:'dialog_stateA', 'class':'tranStart'}).appendTo(dialogDiv);
+    $('<input />', {id:'dialog_readCharTxt', type:'text', maxlength:1, style:'width:30px;text-align:center;'})
+      .val('A')
+      .keypress(function(event) {
+        console.log(event.which);
+        if (event.which === $.ui.keyCode.ENTER) {
+          dialogDiv.parent().find('div.ui-dialog-buttonset button').eq(1).click();
+        }
+      })
+      .appendTo(dialogDiv);
+    $('<span></span>', {id:'dialog_stateB', 'class':'tranEnd'}).appendTo(dialogDiv);
+    
+    $('body').append(dialogDiv);
+    
+    dialogDiv.dialog({
+      autoOpen: false,
+      title: 'Set Transition Character',
+      height: 165,
+      width: 275,
+      modal: true,
+      buttons: {
+        Cancel: dialogCancel,
+        Save: dialogSave
+      },
+      close: dialogClose
+    });
+  };
+
   return {
     init: function() {
       self = this;
       dfa = new DFA();
+      makeDialog();
       return self;
     },
     
@@ -40,20 +101,10 @@ var dfa_delegate = (function() {
     },
     
     connectionAdded: function(info) {
-      // TODO: Better UI
-      var inputChar = prompt('Read what input character on transition?', 'A');
-      inputChar = (inputChar && inputChar.length > 0) ? inputChar[0] : inputChar;
-      if (!inputChar || dfa.hasTransition(info.sourceId, inputChar)) {
-        jsPlumb.detach(info.connection);
-        if (inputChar && inputChar.length === 0) {
-          alert("Deterministic Finite Automaton cannot have empty string transition.");
-        } else if (inputChar) {
-          alert(info.sourceId + " already has a transition for " + inputChar);
-        }
-        return;
-      } 
-      info.connection.setLabel(inputChar);
-      dfa.addTransition(info.sourceId, inputChar, info.targetId);
+      dialogActiveInfo = info;
+      $('#dialog_stateA').html(dialogActiveInfo.sourceId + '&nbsp;');
+      $('#dialog_stateB').html('&nbsp;' + dialogActiveInfo.targetId);
+      dialogDiv.dialog("open");
     },
     
     updateUI: updateUIForDebug,
