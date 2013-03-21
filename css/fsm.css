@@ -201,10 +201,12 @@ h5 {
 
 /* Dialog styling */
 span.tranStart:after {
-  content:"=====";
+  content:url('../images/transition_start.png');
+  vertical-align: bottom;
 }
 span.tranEnd:before {
-  content:"====>";
+  content:url('../images/transition_end.png');
+  vertical-align: bottom;
 }
 
 /* jsPlumb z-index styles */
