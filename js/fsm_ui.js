@@ -11,8 +11,7 @@ var fsm = (function() {
   };
   
   var connectionClicked = function(connection) {
-    delegate.fsm().removeTransition(connection.sourceId, connection.getLabel(), connection.targetId);
-    jsPlumb.detach(connection);
+    delegate.connectionClicked(connection);
   };
   
   var domReadyInit = function() {

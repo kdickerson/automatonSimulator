@@ -105,6 +105,11 @@ var nfa_delegate = (function() {
       dialogDiv.dialog("open");
     },
     
+    connectionClicked: function(connection) {
+      nfa.removeTransition(connection.sourceId, connection.getLabel(), connection.targetId);
+      jsPlumb.detach(connection);
+    },
+    
     updateUI: updateUIForDebug,
     
     reset: function() {
