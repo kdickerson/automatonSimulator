@@ -39,11 +39,11 @@ var dfa_delegate = (function() {
     dialogActiveInfo.connection.setLabel(inputChar);
     dfa.addTransition(dialogActiveInfo.sourceId, inputChar, dialogActiveInfo.targetId);  
     dialogActiveInfo = null;
-    dialogDiv.dialog( "close" );
+    dialogDiv.dialog("close");
   };
 
   var dialogCancel = function() {
-    dialogDiv.dialog( "close" );
+    dialogDiv.dialog("close");
   };
   
   var dialogClose = function() {

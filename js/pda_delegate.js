@@ -86,11 +86,11 @@ var pda_delegate = (function() {
     dialogActiveInfo.connection.setLabel(makeConnectionLabel(inputChar, popChar, pushChar));
     pda.addTransition(dialogActiveInfo.sourceId, inputChar, popChar, pushChar, dialogActiveInfo.targetId);
     dialogActiveInfo = null;
-    dialogDiv.dialog( "close" );
+    dialogDiv.dialog("close");
   };
 
   var dialogCancel = function() {
-    dialogDiv.dialog( "close" );
+    dialogDiv.dialog("close");
   };
   
   var dialogClose = function() {
