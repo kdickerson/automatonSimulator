@@ -2,6 +2,8 @@ var pda_delegate = (function() {
   var self = null;
   var pda = null;
   var container = null;
+  var dialogDiv = null;
+  var dialogActiveInfo = null;
   var emptyLabel = 'ϵ';
   
   var statusConnectors = [];
@@ -68,10 +70,71 @@ var pda_delegate = (function() {
     return self;
   };
 
+  var dialogSave = function() {
+    var inputChar = $('#pda_dialog_readCharTxt').val();
+    var popChar = $('#pda_dialog_popCharTxt').val();
+    var pushChar = $('#pda_dialog_pushCharTxt').val();
+    if (inputChar.length > 1) {inputChar = inputChar[0];}
+    if (popChar.length > 1) {popChar = popChar[0];}
+    if (pushChar.length > 1) {pushChar = pushChar[0];}
+    
+    if (pda.hasTransition(dialogActiveInfo.sourceId, inputChar, popChar, pushChar, dialogActiveInfo.targetId)) {
+      alert(info.sourceId + " already has a transition to " + info.targetId + " on " + 
+            makeConnectionLabel(inputChar, popChar, pushChar));
+      return;
+    }
+    dialogActiveInfo.connection.setLabel(makeConnectionLabel(inputChar, popChar, pushChar));
+    pda.addTransition(dialogActiveInfo.sourceId, inputChar, popChar, pushChar, dialogActiveInfo.targetId);
+    dialogActiveInfo = null;
+    dialogDiv.dialog( "close" );
+  };
+
+  var dialogCancel = function() {
+    dialogDiv.dialog( "close" );
+  };
+  
+  var dialogClose = function() {
+    if (dialogActiveInfo) {
+      jsPlumb.detach(dialogActiveInfo.connection);
+      dialogActiveInfo = null;
+    }
+  };
+
+  var makeDialog = function() {
+    dialogDiv = $('<div></div>', {style:'text-align:center;'});
+    $('<div></div>', {style:'font-size:small;'})
+      .html('Blank for Empty String: '+emptyLabel+'<br />Read from Input | Pop off Stack | Push on Stack')
+      .appendTo(dialogDiv);
+    $('<span></span>', {id:'pda_dialog_stateA', 'class':'tranStart'}).appendTo(dialogDiv);
+    $('<input />', {id:'pda_dialog_readCharTxt', type:'text', maxlength:1, style:'width:30px;text-align:center;', title:'Read from Input'}).val('A').appendTo(dialogDiv);
+    $('<input />', {id:'pda_dialog_popCharTxt', type:'text', maxlength:1, style:'width:30px;text-align:center;', title:'Pop from Stack'}).val('').appendTo(dialogDiv);
+    $('<input />', {id:'pda_dialog_pushCharTxt', type:'text', maxlength:1, style:'width:30px;text-align:center;', title:'Push to Stack'}).val('').appendTo(dialogDiv);
+    dialogDiv.find('input').keypress(function(event) {
+      if (event.which === $.ui.keyCode.ENTER) {dialogDiv.parent().find('div.ui-dialog-buttonset button').eq(1).click();}
+    });
+    $('<span></span>', {id:'pda_dialog_stateB', 'class':'tranEnd'}).appendTo(dialogDiv);
+    $('body').append(dialogDiv);
+    
+    dialogDiv.dialog({
+      autoOpen: false,
+      title: 'Set Transition Characters',
+      height: 220,
+      width: 350,
+      modal: true,
+      buttons: {
+        Cancel: dialogCancel,
+        Save: dialogSave
+      },
+      close: dialogClose
+    });
+  };
+
+
   return {
     init: function() {
       self = this;
       pda = new PDA();
+      makeDialog();
       return self;
     },
     
@@ -85,29 +148,10 @@ var pda_delegate = (function() {
     },
     
     connectionAdded: function(info) {
-      // TODO: Better UI
-      var chars = prompt('Transition characters (format: input,pop,push):', 'A,B,C');
-      var inputChar=null, popChar=null, pushChar = null;
-      if (chars !== null) {
-        chars = chars.split(',');
-        if (chars.length === 3) {
-          inputChar = chars[0];
-          popChar = chars[1];
-          pushChar = chars[2];
-        }
-      }
-      
-      // either they'll all be null or they'll all be non-null, so only need to test one
-      if (inputChar === null || pda.hasTransition(info.sourceId, inputChar, popChar, pushChar, info.targetId)) {
-        jsPlumb.detach(info.connection);
-        if (inputChar !== null) {
-          alert(info.sourceId + " already has a transition to " + info.targetId + " on " + 
-            makeConnectionLabel(inputChar, popChar, pushChar));
-        }
-        return;
-      } 
-      info.connection.setLabel(makeConnectionLabel(inputChar, popChar, pushChar));
-      pda.addTransition(info.sourceId, inputChar, popChar, pushChar, info.targetId);
+      dialogActiveInfo = info;
+      $('#pda_dialog_stateA').html(dialogActiveInfo.sourceId + '&nbsp;');
+      $('#pda_dialog_stateB').html('&nbsp;' + dialogActiveInfo.targetId);
+      dialogDiv.dialog("open");
     },
     
     updateUI: updateUIForDebug,

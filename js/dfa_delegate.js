@@ -26,7 +26,7 @@ var dfa_delegate = (function() {
   };
 
   var dialogSave = function() {
-    var inputChar = $('#dialog_readCharTxt').val();
+    var inputChar = $('#dfa_dialog_readCharTxt').val();
     if (inputChar.length > 1) {inputChar = inputChar[0];}
     if (inputChar.length === 0 || dfa.hasTransition(dialogActiveInfo.sourceId, inputChar)) {
       if (inputChar.length === 0) {
@@ -55,25 +55,22 @@ var dfa_delegate = (function() {
 
   var makeDialog = function() {
     dialogDiv = $('<div></div>', {style:'text-align:center;'});
-    $('<span></span>', {id:'dialog_stateA', 'class':'tranStart'}).appendTo(dialogDiv);
-    $('<input />', {id:'dialog_readCharTxt', type:'text', maxlength:1, style:'width:30px;text-align:center;'})
+    $('<div></div>', {style:'font-size:small;'}).html('Empty transitions not allowed for DFAs<br />Read from Input').appendTo(dialogDiv);
+    $('<span></span>', {id:'dfa_dialog_stateA', 'class':'tranStart'}).appendTo(dialogDiv);
+    $('<input />', {id:'dfa_dialog_readCharTxt', type:'text', maxlength:1, style:'width:30px;text-align:center;'})
       .val('A')
       .keypress(function(event) {
-        console.log(event.which);
-        if (event.which === $.ui.keyCode.ENTER) {
-          dialogDiv.parent().find('div.ui-dialog-buttonset button').eq(1).click();
-        }
+        if (event.which === $.ui.keyCode.ENTER) {dialogDiv.parent().find('div.ui-dialog-buttonset button').eq(1).click();}
       })
       .appendTo(dialogDiv);
-    $('<span></span>', {id:'dialog_stateB', 'class':'tranEnd'}).appendTo(dialogDiv);
-    
+    $('<span></span>', {id:'dfa_dialog_stateB', 'class':'tranEnd'}).appendTo(dialogDiv);
     $('body').append(dialogDiv);
     
     dialogDiv.dialog({
       autoOpen: false,
       title: 'Set Transition Character',
-      height: 165,
-      width: 275,
+      height: 220,
+      width: 310,
       modal: true,
       buttons: {
         Cancel: dialogCancel,
@@ -102,8 +99,8 @@ var dfa_delegate = (function() {
     
     connectionAdded: function(info) {
       dialogActiveInfo = info;
-      $('#dialog_stateA').html(dialogActiveInfo.sourceId + '&nbsp;');
-      $('#dialog_stateB').html('&nbsp;' + dialogActiveInfo.targetId);
+      $('#dfa_dialog_stateA').html(dialogActiveInfo.sourceId + '&nbsp;');
+      $('#dfa_dialog_stateB').html('&nbsp;' + dialogActiveInfo.targetId);
       dialogDiv.dialog("open");
     },
     
