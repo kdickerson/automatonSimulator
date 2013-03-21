@@ -3,13 +3,23 @@ var pda_delegate = (function() {
   var pda = null;
   var container = null;
   var dialogDiv = null;
-  var dialogActiveInfo = null;
+  var dialogActiveConnection = null;
   var emptyLabel = 'ϵ';
   
   var statusConnectors = [];
   
   var makeConnectionLabel = function(inputChar, popChar, pushChar) {
     return (inputChar || emptyLabel) + ',' + (popChar || emptyLabel) + ',' + (pushChar || emptyLabel);
+  };
+  
+  var decodeConnectionLabel = function(label) {
+    var pieces = label.split(',');
+    if (pieces.length !== 3) {return null;}
+    var decoded = {inputChar:pieces[0], popChar:pieces[1], pushChar:pieces[2]};
+    if (decoded.inputChar === emptyLabel) {decoded.inputChar = '';}
+    if (decoded.popChar === emptyLabel) {decoded.popChar = '';}
+    if (decoded.pushChar === emptyLabel) {decoded.pushChar = '';}
+    return decoded;
   };
   
   var addStackDataAndGetStackBox = function(stackStatePair) {
@@ -70,7 +80,7 @@ var pda_delegate = (function() {
     return self;
   };
 
-  var dialogSave = function() {
+  var dialogSave = function(update) {
     var inputChar = $('#pda_dialog_readCharTxt').val();
     var popChar = $('#pda_dialog_popCharTxt').val();
     var pushChar = $('#pda_dialog_pushCharTxt').val();
@@ -78,26 +88,33 @@ var pda_delegate = (function() {
     if (popChar.length > 1) {popChar = popChar[0];}
     if (pushChar.length > 1) {pushChar = pushChar[0];}
     
-    if (pda.hasTransition(dialogActiveInfo.sourceId, inputChar, popChar, pushChar, dialogActiveInfo.targetId)) {
+    if (update) {
+      var labelPieces = decodeConnectionLabel(dialogActiveConnection.getLabel());
+      pda.removeTransition(dialogActiveConnection.sourceId, labelPieces.inputChar, labelPieces.popChar, labelPieces.pushChar, dialogActiveConnection.targetId);
+    } else if (pda.hasTransition(dialogActiveConnection.sourceId, inputChar, popChar, pushChar, dialogActiveConnection.targetId)) {
       alert(info.sourceId + " already has a transition to " + info.targetId + " on " + 
             makeConnectionLabel(inputChar, popChar, pushChar));
       return;
     }
-    dialogActiveInfo.connection.setLabel(makeConnectionLabel(inputChar, popChar, pushChar));
-    pda.addTransition(dialogActiveInfo.sourceId, inputChar, popChar, pushChar, dialogActiveInfo.targetId);
-    dialogActiveInfo = null;
+    dialogActiveConnection.setLabel(makeConnectionLabel(inputChar, popChar, pushChar));
+    pda.addTransition(dialogActiveConnection.sourceId, inputChar, popChar, pushChar, dialogActiveConnection.targetId);
     dialogDiv.dialog("close");
   };
 
-  var dialogCancel = function() {
+  var dialogCancel = function(update) {
+    if (!update) {fsm.removeConnection(dialogActiveConnection);}
+    dialogDiv.dialog("close");
+  };
+  
+  var dialogDelete = function() {
+    var labelPieces = decodeConnectionLabel(dialogActiveConnection.getLabel());
+    pda.removeTransition(dialogActiveConnection.sourceId, labelPieces.inputChar, labelPieces.popChar, labelPieces.pushChar, dialogActiveConnection.targetId);
+    fsm.removeConnection(dialogActiveConnection);
     dialogDiv.dialog("close");
   };
   
   var dialogClose = function() {
-    if (dialogActiveInfo) {
-      jsPlumb.detach(dialogActiveInfo.connection);
-      dialogActiveInfo = null;
-    }
+    dialogActiveConnection = null;
   };
 
   var makeDialog = function() {
@@ -110,22 +127,18 @@ var pda_delegate = (function() {
     $('<input />', {id:'pda_dialog_popCharTxt', type:'text', maxlength:1, style:'width:30px;text-align:center;', title:'Pop from Stack'}).val('').appendTo(dialogDiv);
     $('<input />', {id:'pda_dialog_pushCharTxt', type:'text', maxlength:1, style:'width:30px;text-align:center;', title:'Push to Stack'}).val('').appendTo(dialogDiv);
     dialogDiv.find('input').keypress(function(event) {
-      if (event.which === $.ui.keyCode.ENTER) {dialogDiv.parent().find('div.ui-dialog-buttonset button').eq(1).click();}
+      if (event.which === $.ui.keyCode.ENTER) {dialogDiv.parent().find('div.ui-dialog-buttonset button').eq(-1).click();}
     });
     $('<span></span>', {id:'pda_dialog_stateB', 'class':'tranEnd'}).appendTo(dialogDiv);
     $('body').append(dialogDiv);
     
     dialogDiv.dialog({
+      dialogClass: "no-close",
       autoOpen: false,
       title: 'Set Transition Characters',
       height: 220,
       width: 350,
-      modal: true,
-      buttons: {
-        Cancel: dialogCancel,
-        Save: dialogSave
-      },
-      close: dialogClose
+      modal: true
     });
   };
 
@@ -148,15 +161,29 @@ var pda_delegate = (function() {
     },
     
     connectionAdded: function(info) {
-      dialogActiveInfo = info;
-      $('#pda_dialog_stateA').html(dialogActiveInfo.sourceId + '&nbsp;');
-      $('#pda_dialog_stateB').html('&nbsp;' + dialogActiveInfo.targetId);
-      dialogDiv.dialog("open");
+      dialogActiveConnection = info.connection;
+      $('#pda_dialog_stateA').html(dialogActiveConnection.sourceId + '&nbsp;');
+      $('#pda_dialog_stateB').html('&nbsp;' + dialogActiveConnection.targetId);
+      
+      dialogDiv.dialog('option', 'buttons', {
+        Cancel: function(){dialogCancel(false);},
+        Save: function(){dialogSave(false);}
+      }).dialog("open");
     },
     
     connectionClicked: function(connection) {
-      pda.removeTransition(connection.sourceId, connection.getLabel(), connection.targetId);
-      jsPlumb.detach(connection);
+      dialogActiveConnection = connection;
+      
+      var labelPieces = decodeConnectionLabel(dialogActiveConnection.getLabel());
+      $('#pda_dialog_readCharTxt').val(labelPieces.inputChar);
+      $('#pda_dialog_popCharTxt').val(labelPieces.popChar);
+      $('#pda_dialog_pushCharTxt').val(labelPieces.pushChar);
+      
+      dialogDiv.dialog('option', 'buttons', {
+        Cancel: function(){dialogCancel(true);},
+        Delete: dialogDelete,
+        Save: function(){dialogSave(true);}
+      }).dialog("open");
     },
     
     updateUI: updateUIForDebug,

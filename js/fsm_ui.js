@@ -165,6 +165,10 @@ var fsm = (function() {
       return self;
     },
     
+    removeConnection: function(connection) {
+      jsPlumb.detach(connection);
+    },
+    
     test: function(input) {
       if ($.type(input) === 'string') {
         $('#testResult').html('Testing...')

@@ -200,6 +200,10 @@ h5 {
 }
 
 /* Dialog styling */
+.no-close .ui-dialog-titlebar-close {
+  display: none;
+}
+
 span.tranStart:after {
   content:url('../images/transition_start.png');
   vertical-align: bottom;

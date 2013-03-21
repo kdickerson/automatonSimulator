@@ -3,7 +3,7 @@ var nfa_delegate = (function() {
   var nfa = null;
   var container = null;
   var dialogDiv = null;
-  var dialogActiveInfo = null;
+  var dialogActiveConnection = null;
   var emptyLabel = 'ϵ';
   
   var statusConnectors = [];
@@ -30,28 +30,35 @@ var nfa_delegate = (function() {
     return self;
   };
 
-  var dialogSave = function() {
+  var dialogSave = function(update) {
     var inputChar = $('#nfa_dialog_readCharTxt').val();
     if (inputChar.length > 1) {inputChar = inputChar[0];}
-    if (nfa.hasTransition(dialogActiveInfo.sourceId, inputChar, dialogActiveInfo.targetId)) {
-      alert(dialogActiveInfo.sourceId + " already has a transition to " + dialogActiveInfo.targetId + " on " + (inputChar || emptyLabel));
+    
+    if (update) {
+      nfa.removeTransition(dialogActiveConnection.sourceId, dialogActiveConnection.getLabel(), dialogActiveConnection.targetId);
+    } else if (nfa.hasTransition(dialogActiveConnection.sourceId, inputChar, dialogActiveConnection.targetId)) {
+      alert(dialogActiveConnection.sourceId + " already has a transition to " + dialogActiveConnection.targetId + " on " + (inputChar || emptyLabel));
       return;
     }
-    dialogActiveInfo.connection.setLabel(inputChar || emptyLabel);
-    nfa.addTransition(dialogActiveInfo.sourceId, inputChar, dialogActiveInfo.targetId);  
-    dialogActiveInfo = null;
+    
+    dialogActiveConnection.setLabel(inputChar || emptyLabel);
+    nfa.addTransition(dialogActiveConnection.sourceId, inputChar, dialogActiveConnection.targetId);
     dialogDiv.dialog("close");
   };
 
-  var dialogCancel = function() {
+  var dialogCancel = function(update) {
+    if (!update) {fsm.removeConnection(dialogActiveConnection);}
+    dialogDiv.dialog("close");
+  };
+  
+  var dialogDelete = function() {
+    nfa.removeTransition(dialogActiveConnection.sourceId, dialogActiveConnection.getLabel(), dialogActiveConnection.targetId);
+    fsm.removeConnection(dialogActiveConnection);
     dialogDiv.dialog("close");
   };
   
   var dialogClose = function() {
-    if (dialogActiveInfo) {
-      jsPlumb.detach(dialogActiveInfo.connection);
-      dialogActiveInfo = null;
-    }
+    dialogActiveConnection = null;
   };
 
   var makeDialog = function() {
@@ -61,23 +68,19 @@ var nfa_delegate = (function() {
     $('<input />', {id:'nfa_dialog_readCharTxt', type:'text', maxlength:1, style:'width:30px;text-align:center;'})
       .val('A')
       .keypress(function(event) {
-        if (event.which === $.ui.keyCode.ENTER) {dialogDiv.parent().find('div.ui-dialog-buttonset button').eq(1).click();}
+        if (event.which === $.ui.keyCode.ENTER) {dialogDiv.parent().find('div.ui-dialog-buttonset button').eq(-1).click();}
       })
       .appendTo(dialogDiv);
     $('<span></span>', {id:'nfa_dialog_stateB', 'class':'tranEnd'}).appendTo(dialogDiv);
     $('body').append(dialogDiv);
     
     dialogDiv.dialog({
+      dialogClass: "no-close",
       autoOpen: false,
       title: 'Set Transition Character',
       height: 220,
-      width: 310,
-      modal: true,
-      buttons: {
-        Cancel: dialogCancel,
-        Save: dialogSave
-      },
-      close: dialogClose
+      width: 350,
+      modal: true
     });
   };
 
@@ -99,15 +102,24 @@ var nfa_delegate = (function() {
     },
     
     connectionAdded: function(info) {
-      dialogActiveInfo = info;
-      $('#nfa_dialog_stateA').html(dialogActiveInfo.sourceId + '&nbsp;');
-      $('#nfa_dialog_stateB').html('&nbsp;' + dialogActiveInfo.targetId);
-      dialogDiv.dialog("open");
+      dialogActiveConnection = info.connection;
+      $('#nfa_dialog_stateA').html(dialogActiveConnection.sourceId + '&nbsp;');
+      $('#nfa_dialog_stateB').html('&nbsp;' + dialogActiveConnection.targetId);
+      
+      dialogDiv.dialog('option', 'buttons', {
+        Cancel: function(){dialogCancel(false);},
+        Save: function(){dialogSave(false);}
+      }).dialog("open");
     },
     
     connectionClicked: function(connection) {
-      nfa.removeTransition(connection.sourceId, connection.getLabel(), connection.targetId);
-      jsPlumb.detach(connection);
+      dialogActiveConnection = connection;
+      $('#nfa_dialog_readCharTxt').val(dialogActiveConnection.getLabel());
+      dialogDiv.dialog('option', 'buttons', {
+        Cancel: function(){dialogCancel(true);},
+        Delete: dialogDelete,
+        Save: function(){dialogSave(true);}
+      }).dialog("open");
     },
     
     updateUI: updateUIForDebug,
