@@ -9,9 +9,19 @@ var fsm = (function() {
     return typeof(Storage) !== "undefined";
   };
   
+  var refreshLocalStorageInfo = function() {
+    // TODO: Implement this
+  };
+  
   var makeSaveLoadDialog = function() {
     saveLoadDialog = $('#loadSaveDialog');
     $('#loadSaveTabs').tabs();
+    if (!localStorageAvailable()) {
+      $('#loadSaveTabs')
+        .tabs('option', 'active', 1)
+        .tabs('option', 'disabled', [0])
+        .find('ul li').eq(0).attr('title', 'Browser Storage not supported in this browser');
+    }
     saveLoadDialog.dialog({
       autoOpen: false,
       dialogClass: 'loadSave no-close',
@@ -316,8 +326,7 @@ var fsm = (function() {
         }
       });
       
-      // TODO: Refresh the localStorage part of the dialog
-      
+      refreshLocalStorageInfo();
       $('#plaintext textarea').html('');
       saveLoadDialog.dialog('open');
     },
@@ -333,8 +342,7 @@ var fsm = (function() {
         buttons: {Close: function(){saveLoadDialog.dialog('close');}}
       });
       
-      // TODO: Refresh the localStorage part of the dialog
-      
+      refreshLocalStorageInfo();
       $('#plaintext textarea').html(JSON.stringify(model));
       saveLoadDialog.dialog('open');
     }
