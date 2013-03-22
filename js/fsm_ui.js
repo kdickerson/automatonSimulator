@@ -325,6 +325,7 @@ var fsm = (function() {
           Load: function(){finishLoading();saveLoadDialog.dialog('close');}
         }
       });
+      $('#saveLoadTabs').off('tabsactivate');
       
       refreshLocalStorageInfo();
       $('#plaintext textarea').html('');
@@ -336,14 +337,30 @@ var fsm = (function() {
       container.find('div.state').each(function() {
         if ($(this).attr('id') !== 'start') {$.extend(model.states[$(this).attr('id')], $(this).position());}
       });
-
-      saveLoadDialog.dialog('option', {
-        title: 'Save Automaton',
-        buttons: {Close: function(){saveLoadDialog.dialog('close');}}
-      });
+      var serializedModel = JSON.stringify(model);
+      
+      var finishSaving = function() {
+        // TODO: save to the specified localStorage key
+      };
+      
+      var buttonUpdater = function(event, ui) {
+        if (ui.newPanel.attr('id') === 'browserStorage') {
+          saveLoadDialog.dialog('option', 'buttons', {
+            Save: function(){finishSaving();saveLoadDialog.dialog('close');}
+          });
+        } else if (ui.newPanel.attr('id') === 'plaintext') {
+          saveLoadDialog.dialog('option', 'buttons', {
+            Close: function(){saveLoadDialog.dialog('close');}
+          });
+        }
+      };
+      
+      saveLoadDialog.dialog('option', 'title', 'Save Automaton');
+      $('#saveLoadTabs').on('tabsactivate', buttonUpdater);
+      buttonUpdater(null, {newPanel: $('#saveLoadTabs div').eq($('#saveLoadTabs').tabs('option', 'active'))});
       
       refreshLocalStorageInfo();
-      $('#plaintext textarea').html(JSON.stringify(model));
+      $('#plaintext textarea').html(serializedModel);
       saveLoadDialog.dialog('open');
     }
   };
