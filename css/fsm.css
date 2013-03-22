@@ -200,6 +200,16 @@ h5 {
 }
 
 /* Dialog styling */
+.loadSave .ui-dialog-content textarea {
+  font-size: x-small;
+  border: 1px solid #aaa;
+  width: 100%;
+  height: 100%; 
+  box-sizing: border-box;         /* For IE and modern versions of Chrome */
+  -moz-box-sizing: border-box;    /* For Firefox                          */
+  -webkit-box-sizing: border-box; /* For Safari                           */
+}
+
 .no-close .ui-dialog-titlebar-close {
   display: none;
 }
