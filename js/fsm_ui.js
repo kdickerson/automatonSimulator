@@ -3,48 +3,22 @@ var fsm = (function() {
   var delegate = null;
   var container = null;
   var stateCounter = 0;
-  var saveDialog = null;
-  var loadDialog = null;
+  var saveLoadDialog = null;
   
   var localStorageAvailable = function () {
     return typeof(Storage) !== "undefined";
   };
   
-  var makeSaveDialog = function() {
-    saveDialog = $('#saveDialog');
-    $('#saveTabs').tabs();
-    saveDialog.dialog({
+  var makeSaveLoadDialog = function() {
+    saveLoadDialog = $('#loadSaveDialog');
+    $('#loadSaveTabs').tabs();
+    saveLoadDialog.dialog({
       autoOpen: false,
       dialogClass: 'loadSave no-close',
-      title: 'Save Automaton',
       width: 500,
-      height: 450,
-      buttons: {Done: function(){saveDialog.dialog('destroy').remove();}}
+      height: 450
     });
-    $('#saveTabs textarea').height(275);
-  };
-  
-  var makeLoadDialog = function() {
-    var finishLoading = function() {
-      // TODO: Determine which type of load to do, get the serialized FSM, pass to loader
-      var serializedFSM = loadDialog.find('textarea').val();
-      loadSerializedFSM(serializedFSM);
-    };
-    
-    loadDialog = $('#loadDialog');
-    $('#loadTabs').tabs();
-    loadDialog.dialog({
-      autoOpen: false,
-      dialogClass: 'loadSave no-close',
-      title: 'Load Automaton',
-      width: 500,
-      height: 450,
-      buttons: {
-        Cancel: function(){loadDialog.dialog('close').dialog('destroy').remove();},
-        Load: function(){finishLoading();loadDialog.dialog('close').dialog('destroy').remove();}
-      }
-    });
-    $('#loadTabs textarea').height(275);
+    $('#loadSaveTabs textarea').height(275);
   };
   
   var initJsPlumb = function() {
@@ -177,8 +151,7 @@ var fsm = (function() {
     initJsPlumb();
     initStateEvents();
     initFSMSelectors();
-    makeSaveDialog();
-    makeLoadDialog();
+    makeSaveLoadDialog();
   };
   
   var makeStartState = function() {
@@ -329,9 +302,24 @@ var fsm = (function() {
     },
     
     load: function() {
+      var finishLoading = function() {
+        // TODO: Determine which type of load to do, get the serialized FSM, pass to loader
+        var serializedFSM = saveLoadDialog.find('textarea').val();
+        loadSerializedFSM(serializedFSM);
+      };
+      
+      saveLoadDialog.dialog('option', {
+        title: 'Load Automaton',
+        buttons: {
+          Cancel: function(){saveLoadDialog.dialog('close');},
+          Load: function(){finishLoading();saveLoadDialog.dialog('close');}
+        }
+      });
+      
       // TODO: Refresh the localStorage part of the dialog
-      $('#loadPlaintext textarea').html('');
-      loadDialog.dialog('open');
+      
+      $('#plaintext textarea').html('');
+      saveLoadDialog.dialog('open');
     },
     
     save: function() {
@@ -340,10 +328,15 @@ var fsm = (function() {
         if ($(this).attr('id') !== 'start') {$.extend(model.states[$(this).attr('id')], $(this).position());}
       });
 
+      saveLoadDialog.dialog('option', {
+        title: 'Save Automaton',
+        buttons: {Close: function(){saveLoadDialog.dialog('close');}}
+      });
+      
       // TODO: Refresh the localStorage part of the dialog
       
-      $('#savePlaintext textarea').html(JSON.stringify(model));
-      saveDialog.dialog('open');
+      $('#plaintext textarea').html(JSON.stringify(model));
+      saveLoadDialog.dialog('open');
     }
   };
 })().init();
