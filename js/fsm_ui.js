@@ -14,10 +14,11 @@ var fsm = (function() {
   };
   
   var makeSaveLoadDialog = function() {
-    saveLoadDialog = $('#loadSaveDialog');
-    $('#loadSaveTabs').tabs();
+    saveLoadDialog = $('#saveLoadDialog');
+    $('#saveLoadTabs').tabs();
+    $('#saveLoadTabs textarea').height(275);
     if (!localStorageAvailable()) {
-      $('#loadSaveTabs')
+      $('#saveLoadTabs')
         .tabs('option', 'active', 1)
         .tabs('option', 'disabled', [0])
         .find('ul li').eq(0).attr('title', 'Browser Storage not supported in this browser');
@@ -28,7 +29,6 @@ var fsm = (function() {
       width: 500,
       height: 450
     });
-    $('#loadSaveTabs textarea').height(275);
   };
   
   var initJsPlumb = function() {
