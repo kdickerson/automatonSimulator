@@ -200,14 +200,28 @@ h5 {
 }
 
 /* Dialog styling */
+.loadSave .ui-dialog-content {
+  padding: 0;
+  margin: 0;
+}
+
+.loadSave .ui-dialog-buttonpane {
+  padding: .05em;
+  margin-top: .1em;
+}
+
+.loadSave .ui-tabs, .loadSave .ui-tabs-panel, .loadSave .ui-dialog-content textarea {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;      /* For IE and modern versions of Chrome */
+  -moz-box-sizing: border-box;   /* For Firefox                          */
+  -webkit-box-sizing: border-box; /* For Safari                           */
+}
+
 .loadSave .ui-dialog-content textarea {
   font-size: x-small;
   border: 1px solid #aaa;
-  width: 100%;
-  height: 100%; 
-  box-sizing: border-box;         /* For IE and modern versions of Chrome */
-  -moz-box-sizing: border-box;    /* For Firefox                          */
-  -webkit-box-sizing: border-box; /* For Safari                           */
 }
 
 .no-close .ui-dialog-titlebar-close {

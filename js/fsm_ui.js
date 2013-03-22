@@ -11,75 +11,40 @@ var fsm = (function() {
   };
   
   var makeSaveDialog = function() {
-    var model = delegate.serialize();
-    container.find('div.state').each(function() {
-      if ($(this).attr('id') !== 'start') {$.extend(model.states[$(this).attr('id')], $(this).position());}
-    });
-    
-    var asString = JSON.stringify(model);
-          
-    // TODO: UI for saving to browser storage
-    var saveDialog = $('<div></div>').append($('<textarea></textarea>').html(asString)).dialog({
+    saveDialog = $('#saveDialog');
+    $('#saveTabs').tabs();
+    saveDialog.dialog({
+      autoOpen: false,
       dialogClass: 'loadSave no-close',
-      title: 'Save: Serialized FSM',
-      appendTo: 'body',
+      title: 'Save Automaton',
       width: 500,
-      height: 400,
+      height: 450,
       buttons: {Done: function(){saveDialog.dialog('destroy').remove();}}
     });
+    $('#saveTabs textarea').height(275);
   };
   
   var makeLoadDialog = function() {
-    var finishLoading = function(serializedFSM) {
-      var model = JSON.parse(serializedFSM);
-    
-      // Load the delegate && reset everything
-      self.reset();
-      $('button.delegate').each(function() {
-        if ($(this).html() === model.type) {
-          $(this).click();
-        }
-      });
-      
-      // Create states
-      $.each(model.states, function(stateId, data) {
-        var state = null;
-        if (stateId !== 'start') {
-          state = makeState(stateId)
-            .css('left', data.left + 'px')
-            .css('top', data.top + 'px')
-            .appendTo(container);
-          jsPlumb.draggable(state, {containment:"parent"});
-          makeStatePlumbing(state);
-        } else {
-          state = $('#start');
-        }
-        if (data.isAccept) {state.find('input.isAccept').prop('checked', true);}
-      });
-      
-      // Create Transitions
-      jsPlumb.unbind("jsPlumbConnection"); // unbind listener to prevent transition prompts
-      $.each(model.transitions, function(index, transition) {
-        jsPlumb.connect({source:transition.stateA, target:transition.stateB}).setLabel(transition.label);
-      });
-      jsPlumb.bind("jsPlumbConnection", delegate.connectionAdded);
-      
-      // Deserialize to the fsm
-      delegate.deserialize(model);
+    var finishLoading = function() {
+      // TODO: Determine which type of load to do, get the serialized FSM, pass to loader
+      var serializedFSM = loadDialog.find('textarea').val();
+      loadSerializedFSM(serializedFSM);
     };
     
-    // TODO: UI for loading from browser storage
-    var loadDialog = $('<div></div>').append('<textarea></textarea>').dialog({
+    loadDialog = $('#loadDialog');
+    $('#loadTabs').tabs();
+    loadDialog.dialog({
+      autoOpen: false,
       dialogClass: 'loadSave no-close',
-      title: 'Load: Paste in Serialized FSM',
-      appendTo: 'body',
+      title: 'Load Automaton',
       width: 500,
-      height: 400,
+      height: 450,
       buttons: {
         Cancel: function(){loadDialog.dialog('close').dialog('destroy').remove();},
-        Load: function(){finishLoading(loadDialog.find('textarea').val());loadDialog.dialog('close').dialog('destroy').remove();}
+        Load: function(){finishLoading();loadDialog.dialog('close').dialog('destroy').remove();}
       }
     });
+    $('#loadTabs textarea').height(275);
   };
   
   var initJsPlumb = function() {
@@ -148,6 +113,44 @@ var fsm = (function() {
         $(this).click();
       }
     });
+  };
+  
+  var loadSerializedFSM = function(serializedFSM) {
+    var model = JSON.parse(serializedFSM);
+  
+    // Load the delegate && reset everything
+    self.reset();
+    $('button.delegate').each(function() {
+      if ($(this).html() === model.type) {
+        $(this).click();
+      }
+    });
+    
+    // Create states
+    $.each(model.states, function(stateId, data) {
+      var state = null;
+      if (stateId !== 'start') {
+        state = makeState(stateId)
+          .css('left', data.left + 'px')
+          .css('top', data.top + 'px')
+          .appendTo(container);
+        jsPlumb.draggable(state, {containment:"parent"});
+        makeStatePlumbing(state);
+      } else {
+        state = $('#start');
+      }
+      if (data.isAccept) {state.find('input.isAccept').prop('checked', true);}
+    });
+    
+    // Create Transitions
+    jsPlumb.unbind("jsPlumbConnection"); // unbind listener to prevent transition prompts
+    $.each(model.transitions, function(index, transition) {
+      jsPlumb.connect({source:transition.stateA, target:transition.stateB}).setLabel(transition.label);
+    });
+    jsPlumb.bind("jsPlumbConnection", delegate.connectionAdded);
+    
+    // Deserialize to the fsm
+    delegate.deserialize(model);
   };
   
   var updateStatusUI = function(status) {
@@ -326,10 +329,20 @@ var fsm = (function() {
     },
     
     load: function() {
+      // TODO: Refresh the localStorage part of the dialog
+      $('#loadPlaintext textarea').html('');
       loadDialog.dialog('open');
     },
     
     save: function() {
+      var model = delegate.serialize();
+      container.find('div.state').each(function() {
+        if ($(this).attr('id') !== 'start') {$.extend(model.states[$(this).attr('id')], $(this).position());}
+      });
+
+      // TODO: Refresh the localStorage part of the dialog
+      
+      $('#savePlaintext textarea').html(JSON.stringify(model));
       saveDialog.dialog('open');
     }
   };
