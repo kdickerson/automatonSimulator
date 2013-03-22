@@ -3,25 +3,86 @@ var fsm = (function() {
   var delegate = null;
   var container = null;
   var stateCounter = 0;
+  var saveDialog = null;
+  var loadDialog = null;
   
-  var updateStatusUI = function(status) {
-    $('#fsmDebugInputStatus span.consumedInput').html(status.input.substring(0, status.inputIndex));
-    $('#fsmDebugInputStatus span.currentInput').html(status.input.substr(status.inputIndex, 1));
-    $('#fsmDebugInputStatus span.futureInput').html(status.input.substring(status.inputIndex+1));
+  var localStorageAvailable = function () {
+    return typeof(Storage) !== "undefined";
   };
   
-  var connectionClicked = function(connection) {
-    delegate.connectionClicked(connection);
-  };
-  
-  var domReadyInit = function() {
-    self.setGraphContainer($('#machineGraph'));
-    
-    $(window).resize(function() {
-      container.height($(window).height() - $('#mainHolder h1').outerHeight() - $('#footer').outerHeight() - $('#bulkResultHeader').outerHeight() - $('#resultConsole').outerHeight() - 30 + 'px');
+  var makeSaveDialog = function() {
+    var model = delegate.serialize();
+    container.find('div.state').each(function() {
+      if ($(this).attr('id') !== 'start') {$.extend(model.states[$(this).attr('id')], $(this).position());}
     });
-    $(window).resize();
     
+    var asString = JSON.stringify(model);
+          
+    // TODO: UI for saving to browser storage
+    var saveDialog = $('<div></div>').append($('<textarea></textarea>').html(asString)).dialog({
+      dialogClass: 'loadSave no-close',
+      title: 'Save: Serialized FSM',
+      appendTo: 'body',
+      width: 500,
+      height: 400,
+      buttons: {Done: function(){saveDialog.dialog('destroy').remove();}}
+    });
+  };
+  
+  var makeLoadDialog = function() {
+    var finishLoading = function(serializedFSM) {
+      var model = JSON.parse(serializedFSM);
+    
+      // Load the delegate && reset everything
+      self.reset();
+      $('button.delegate').each(function() {
+        if ($(this).html() === model.type) {
+          $(this).click();
+        }
+      });
+      
+      // Create states
+      $.each(model.states, function(stateId, data) {
+        var state = null;
+        if (stateId !== 'start') {
+          state = makeState(stateId)
+            .css('left', data.left + 'px')
+            .css('top', data.top + 'px')
+            .appendTo(container);
+          jsPlumb.draggable(state, {containment:"parent"});
+          makeStatePlumbing(state);
+        } else {
+          state = $('#start');
+        }
+        if (data.isAccept) {state.find('input.isAccept').prop('checked', true);}
+      });
+      
+      // Create Transitions
+      jsPlumb.unbind("jsPlumbConnection"); // unbind listener to prevent transition prompts
+      $.each(model.transitions, function(index, transition) {
+        jsPlumb.connect({source:transition.stateA, target:transition.stateB}).setLabel(transition.label);
+      });
+      jsPlumb.bind("jsPlumbConnection", delegate.connectionAdded);
+      
+      // Deserialize to the fsm
+      delegate.deserialize(model);
+    };
+    
+    // TODO: UI for loading from browser storage
+    var loadDialog = $('<div></div>').append('<textarea></textarea>').dialog({
+      dialogClass: 'loadSave no-close',
+      title: 'Load: Paste in Serialized FSM',
+      appendTo: 'body',
+      width: 500,
+      height: 400,
+      buttons: {
+        Cancel: function(){loadDialog.dialog('close').dialog('destroy').remove();},
+        Load: function(){finishLoading(loadDialog.find('textarea').val());loadDialog.dialog('close').dialog('destroy').remove();}
+      }
+    });
+  };
+  
+  var initJsPlumb = function() {
     jsPlumb.importDefaults({
       Anchors: ["Continuous", "Continuous"],
       ConnectorZIndex: 5,
@@ -41,10 +102,9 @@ var fsm = (function() {
     });
     
     jsPlumb.bind("click", connectionClicked);
-    
-    // Setup handling 'enter' in test string box
-    $('#testString').keyup(function(event) {if (event.which === 13) {$('#testBtn').trigger('click');}});
-    
+  };
+  
+  var initStateEvents = function() {
     // Setup handling the 'delete' divs on states
     container.on('mouseover', 'div.state', function(event) {
       $(this).find('div.delete').show();
@@ -65,7 +125,9 @@ var fsm = (function() {
         delegate.fsm().removeAcceptState(stateId);
       }
     });
-    
+  };
+  
+  var initFSMSelectors = function() {
     // Setup the Automaton type listeners:
     $('button.delegate').on('click', function() {
       var newDelegate = null;
@@ -86,6 +148,34 @@ var fsm = (function() {
         $(this).click();
       }
     });
+  };
+  
+  var updateStatusUI = function(status) {
+    $('#fsmDebugInputStatus span.consumedInput').html(status.input.substring(0, status.inputIndex));
+    $('#fsmDebugInputStatus span.currentInput').html(status.input.substr(status.inputIndex, 1));
+    $('#fsmDebugInputStatus span.futureInput').html(status.input.substring(status.inputIndex+1));
+  };
+  
+  var connectionClicked = function(connection) {
+    delegate.connectionClicked(connection);
+  };
+  
+  var domReadyInit = function() {
+    self.setGraphContainer($('#machineGraph'));
+    
+    $(window).resize(function() {
+      container.height($(window).height() - $('#mainHolder h1').outerHeight() - $('#footer').outerHeight() - $('#bulkResultHeader').outerHeight() - $('#resultConsole').outerHeight() - 30 + 'px');
+    });
+    $(window).resize();
+    
+    // Setup handling 'enter' in test string box
+    $('#testString').keyup(function(event) {if (event.which === 13) {$('#testBtn').trigger('click');}});
+    
+    initJsPlumb();
+    initStateEvents();
+    initFSMSelectors();
+    makeSaveDialog();
+    makeLoadDialog();
   };
   
   var makeStartState = function() {
@@ -236,76 +326,11 @@ var fsm = (function() {
     },
     
     load: function() {
-      // TODO: UI for loading from browser storage
-      var finishLoading = function(serializedFSM) {
-        var model = JSON.parse(serializedFSM);
-      
-        // Load the delegate && reset everything
-        self.reset();
-        $('button.delegate').each(function() {
-          if ($(this).html() === model.type) {
-            $(this).click();
-          }
-        });
-        
-        // Create states
-        $.each(model.states, function(stateId, data) {
-          var state = null;
-          if (stateId !== 'start') {
-            state = makeState(stateId)
-              .css('left', data.left + 'px')
-              .css('top', data.top + 'px')
-              .appendTo(container);
-            jsPlumb.draggable(state, {containment:"parent"});
-            makeStatePlumbing(state);
-          } else {
-            state = $('#start');
-          }
-          if (data.isAccept) {state.find('input.isAccept').prop('checked', true);}
-        });
-        
-        // Create Transitions
-        jsPlumb.unbind("jsPlumbConnection"); // unbind listener to prevent transition prompts
-        $.each(model.transitions, function(index, transition) {
-          jsPlumb.connect({source:transition.stateA, target:transition.stateB}).setLabel(transition.label);
-        });
-        jsPlumb.bind("jsPlumbConnection", delegate.connectionAdded);
-        
-        // Deserialize to the fsm
-        delegate.deserialize(model);
-      };
-      
-      var dialogDiv = $('<div></div>').append('<textarea></textarea>').dialog({
-        dialogClass: 'loadSave no-close',
-        title: 'Load: Paste in Serialized FSM',
-        appendTo: 'body',
-        width: 500,
-        height: 400,
-        buttons: {
-          Cancel: function(){dialogDiv.dialog('close').dialog('destroy').remove();},
-          Load: function(){finishLoading(dialogDiv.dialog('close').find('textarea').val());dialogDiv.dialog('destroy').remove();}
-        }
-      });
+      loadDialog.dialog('open');
     },
     
     save: function() {
-      var model = delegate.serialize();
-      container.find('div.state').each(function() {
-        if ($(this).attr('id') !== 'start') {$.extend(model.states[$(this).attr('id')], $(this).position());}
-      });
-      
-      var asString = JSON.stringify(model);
-      
-      var dialogDiv = $('<div></div>').append($('<textarea></textarea>').html(asString)).dialog({
-        dialogClass: 'loadSave no-close',
-        title: 'Save: Serialized FSM',
-        appendTo: 'body',
-        width: 500,
-        height: 400,
-        buttons: {Done: function(){dialogDiv.dialog('destroy').remove();}}
-      });
-      
-      // TODO: UI for saving to browser storage
+      saveDialog.dialog('open');
     }
   };
 })().init();
