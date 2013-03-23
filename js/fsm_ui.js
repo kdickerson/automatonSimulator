@@ -250,6 +250,7 @@ var fsm = (function() {
       jsPlumb.unbind("jsPlumbConnection");
       jsPlumb.reset();
       container.empty();
+      initJsPlumb();
       jsPlumb.bind("jsPlumbConnection", delegate.connectionAdded);
       stateCounter = 0;
       makeStartState();
