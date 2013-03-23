@@ -248,9 +248,9 @@ var fsm = (function() {
       delegate.setContainer(container);
       delegate.reset().fsm().setStartState('start');
       jsPlumb.unbind("jsPlumbConnection");
-      jsPlumb.bind("jsPlumbConnection", delegate.connectionAdded);
-      jsPlumb.detachAllConnections($('.state'));
+      jsPlumb.reset();
       container.empty();
+      jsPlumb.bind("jsPlumbConnection", delegate.connectionAdded);
       stateCounter = 0;
       makeStartState();
       return self;
