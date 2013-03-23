@@ -18,7 +18,7 @@ var fsm = (function() {
       }
       keys.sort();
       $.each(keys, function(idx, key) {
-        $('<div></div>', {'class':'machineName'})
+        $('<li></li>', {'class':'machineName'})
           .append($('<span></span>').html(key))
           .append('<div class="delete" style="display:none;" title="Delete"><img class="delete" src="images/empty.png" /></div>')
           .appendTo('#storedMachines');
@@ -48,22 +48,22 @@ var fsm = (function() {
     });
     
     // Event Handlers for the LocalStorage widget
-    $('#machineName').focus(function() {$(this).val('');})
+    $('#machineName').focus(function() {if ($(this).val() === $(this).attr('title')) {$(this).val('');}})
       .blur(function() {if($(this).val() === '') {$(this).val($(this).attr('title'));}})
       .keyup(function(event) {
         if (event.which === $.ui.keyCode.ENTER) {
-          saveLoadDiaog.find('.ui-dialog-buttonpane button').eq(-1).trigger('click');
+          saveLoadDialog.parent().find('.ui-dialog-buttonpane button').eq(-1).trigger('click');
       }});
     
-    $('#storedMachines').on('mouseover', 'div.machineName', function(event) {
+    $('#storedMachines').on('mouseover', 'li.machineName', function(event) {
       $(this).find('div.delete').show();
-    }).on('mouseout', 'span', function(event) {
+    }).on('mouseout', 'li.machineName', function(event) {
       $(this).find('div.delete').hide();
-    }).on('click', 'div.machineName div.delete', function(event) {
-      localStorage.removeItem($(this).closest('div.machineName').find('span').html());
-      refreshLocalStorageInfo();
+    }).on('click', 'li.machineName div.delete', function(event) {
       event.stopPropagation();
-    }).on('click', 'div.machineName', function(event) {
+      localStorage.removeItem($(this).closest('li.machineName').find('span').html());
+      refreshLocalStorageInfo();
+    }).on('click', 'li.machineName', function(event) {
       $('#machineName').val($(this).find('span').html()).focus();
     });
   };

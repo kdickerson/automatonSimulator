@@ -249,12 +249,11 @@ span.tranEnd:before {
   max-height: 250px;
 }
 
-#storedMachines div.machineName {
-  display: inline-block;
-  width: 49%;
-}
-
-  div.machineName div.delete {
+  li.machineName {
+    position: relative;
+  }
+  
+  li.machineName div.delete {
     position: absolute;
     top: 0;
     right: 0;
