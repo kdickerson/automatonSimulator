@@ -137,7 +137,10 @@ var fsm = (function() {
   };
   
   var loadSerializedFSM = function(serializedFSM) {
-    var model = JSON.parse(serializedFSM);
+    var model = serializedFSM;
+    if (typeof serializedFSM === 'string') {
+	  model = JSON.parse(serializedFSM);
+	}
   
     // Load the delegate && reset everything
     self.reset();
