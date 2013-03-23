@@ -349,6 +349,12 @@ var fsm = (function() {
     
     reset: function() {
       self.setDelegate(delegate);
+      $('#testString').val('');
+      $('#testResult').html('&nbsp;');
+      $('#acceptStrings').val('');
+      $('#rejectStrings').val('');
+      $('#resultConsole').empty();
+      
       return self;
     },
     
