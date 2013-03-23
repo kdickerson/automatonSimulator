@@ -30,7 +30,10 @@ h1 {
   }
   
   #examples {
-    width: 200px;
+    max-width: 200px;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-align: left;
   }
   
 h5 {
