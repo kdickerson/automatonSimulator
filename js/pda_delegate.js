@@ -201,6 +201,9 @@ var pda_delegate = (function() {
     debugStop: function() {
       $('.current').removeClass('current');
       container.find('.fsmStatus').remove();
+      $.each(statusConnectors, function(index, connection) {
+        connection.setPaintStyle(jsPlumb.Defaults.PaintStyle);
+      });
       return self;
     },
     
