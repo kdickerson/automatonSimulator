@@ -115,21 +115,24 @@ h5 {
       left: 5px;
     }
 
-    div.delete {
+    div.state div.delete {
       position: absolute;
       top: -18px;
       left: 40px;
-      width: 20px;
-      height: 20px;
-      line-height: 20px; 
-      text-align: center;
-      color: #aaa;
-      z-index: 100;
     }
 
-    div.delete:hover {
-      cursor: pointer;
-    }
+div.delete {
+  width: 20px;
+  height: 20px;
+  line-height: 20px; 
+  text-align: center;
+  color: #aaa;
+  z-index: 100;
+}
+
+div.delete:hover {
+  cursor: pointer;
+}
 
 #fsmDebugInputStatus {
   display: inline-block;
@@ -236,6 +239,26 @@ span.tranEnd:before {
   content:url('../images/transition_end.png');
   vertical-align: bottom;
 }
+
+/* Local Storage Widget */
+#machineName {
+  width: 98%;
+}
+
+#storedMachines {
+  max-height: 250px;
+}
+
+#storedMachines div.machineName {
+  display: inline-block;
+  width: 49%;
+}
+
+  div.machineName div.delete {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
 
 /* jsPlumb z-index styles */
 ._jsPlumb_connector {

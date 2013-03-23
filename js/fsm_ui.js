@@ -6,11 +6,24 @@ var fsm = (function() {
   var saveLoadDialog = null;
   
   var localStorageAvailable = function () {
-    return typeof(Storage) !== "undefined";
+    return (typeof Storage !== "undefined"  && typeof localStorage !== "undefined");
   };
   
   var refreshLocalStorageInfo = function() {
-    // TODO: Implement this
+    if (localStorageAvailable()) {
+      $('#storedMachines').empty();
+      var keys = [];
+      for (var i=0; i < localStorage.length; ++i) {
+        keys.push(localStorage.key(i));
+      }
+      keys.sort();
+      $.each(keys, function(idx, key) {
+        $('<div></div>', {'class':'machineName'})
+          .append($('<span></span>').html(key))
+          .append('<div class="delete" style="display:none;" title="Delete"><img class="delete" src="images/empty.png" /></div>')
+          .appendTo('#storedMachines');
+      });
+    }
   };
   
   var makeSaveLoadDialog = function() {
@@ -27,7 +40,31 @@ var fsm = (function() {
       autoOpen: false,
       dialogClass: 'loadSave no-close',
       width: 500,
-      height: 450
+      height: 450,
+      open: function() {
+        // Focus on either the machineName entry box or the textarea depending on what panel is active
+        saveLoadDialog.find("div.ui-tabs-panel:not(.ui-tabs-hide)").find('input, textarea').focus();
+      }
+    });
+    
+    // Event Handlers for the LocalStorage widget
+    $('#machineName').focus(function() {$(this).val('');})
+      .blur(function() {if($(this).val() === '') {$(this).val($(this).attr('title'));}})
+      .keyup(function(event) {
+        if (event.which === $.ui.keyCode.ENTER) {
+          saveLoadDiaog.find('.ui-dialog-buttonpane button').eq(-1).trigger('click');
+      }});
+    
+    $('#storedMachines').on('mouseover', 'div.machineName', function(event) {
+      $(this).find('div.delete').show();
+    }).on('mouseout', 'span', function(event) {
+      $(this).find('div.delete').hide();
+    }).on('click', 'div.machineName div.delete', function(event) {
+      localStorage.removeItem($(this).closest('div.machineName').find('span').html());
+      refreshLocalStorageInfo();
+      event.stopPropagation();
+    }).on('click', 'div.machineName', function(event) {
+      $('#machineName').val($(this).find('span').html()).focus();
     });
   };
   
@@ -160,7 +197,7 @@ var fsm = (function() {
     $(window).resize();
     
     // Setup handling 'enter' in test string box
-    $('#testString').keyup(function(event) {if (event.which === 13) {$('#testBtn').trigger('click');}});
+    $('#testString').keyup(function(event) {if (event.which === $.ui.keyCode.ENTER) {$('#testBtn').trigger('click');}});
     
     initJsPlumb();
     initStateEvents();
@@ -213,7 +250,7 @@ var fsm = (function() {
       jsPlumb.unbind("jsPlumbConnection");
       jsPlumb.bind("jsPlumbConnection", delegate.connectionAdded);
       jsPlumb.detachAllConnections($('.state'));
-      container.html('');
+      container.empty();
       stateCounter = 0;
       makeStartState();
       return self;
@@ -255,7 +292,7 @@ var fsm = (function() {
         var accepts = delegate.fsm().accepts(input);
         $('#testResult').html(accepts ? 'Accepted' : 'Rejected').effect('highlight', {color: accepts ? '#bfb' : '#fbb'}, 1000);
       } else {
-        $('#resultConsole').html('');
+        $('#resultConsole').empty();
         var makePendingEntry = function(input, type) {
             return $('<div></div>', {'class':'pending', title:'Pending'}).append(type + ': ' + (input === '' ? '[Empty String]' : input)).appendTo('#resultConsole');
         };
@@ -317,23 +354,37 @@ var fsm = (function() {
     
     load: function() {
       var finishLoading = function() {
-        // TODO: Determine which type of load to do, get the serialized FSM, pass to loader
-        var serializedFSM = saveLoadDialog.find('textarea').val();
-        
-        loadSerializedFSM(serializedFSM);
+        var serializedModel = null;
+        if ($('#saveLoadTabs').tabs('option', 'active') === 0) {
+          var storageKey = $('#machineName').val();
+          if (localStorageAvailable()) {
+            serializedModel = localStorage.getItem(storageKey);
+            if (!serializedModel) {
+              alert('Failed to Retrieve Machine with Name "'+storageKey+'"');
+              return false;
+            }
+          } else {
+            alert("Can't load machine from Browser Storage, this browser doesn't support it.");
+            return false;
+          }
+        } else {
+          serializedModel = saveLoadDialog.find('textarea').val();
+        }
+        loadSerializedFSM(serializedModel);
+        return true;
       };
       
       saveLoadDialog.dialog('option', {
         title: 'Load Automaton',
         buttons: {
           Cancel: function(){saveLoadDialog.dialog('close');},
-          Load: function(){finishLoading();saveLoadDialog.dialog('close');}
+          Load: function(){if (finishLoading()) {saveLoadDialog.dialog('close');}}
         }
       });
       $('#saveLoadTabs').off('tabsactivate');
       
       refreshLocalStorageInfo();
-      $('#plaintext textarea').html('');
+      $('#plaintext textarea').empty();
       saveLoadDialog.dialog('open');
     },
     
@@ -349,13 +400,22 @@ var fsm = (function() {
       var serializedModel = JSON.stringify(model);
       
       var finishSaving = function() {
-        // TODO: save to the specified localStorage key
+        var storageKey = $('#machineName').val();
+        if (!storageKey) {alert("Please Provide a Name"); return false;}
+        if (localStorageAvailable()) {
+          localStorage.setItem(storageKey, serializedModel);
+        } else {
+          alert("Can't save machine to Browser Storage, this browser doesn't support it.");
+          return false;
+        }
+        return true;
       };
       
       var buttonUpdater = function(event, ui) {
         if (ui.newPanel.attr('id') === 'browserStorage') {
           saveLoadDialog.dialog('option', 'buttons', {
-            Save: function(){finishSaving();saveLoadDialog.dialog('close');}
+            Cancel: function(){saveLoadDialog.dialog('close');},
+            Save: function(){if (finishSaving()) {saveLoadDialog.dialog('close');}}
           });
         } else if (ui.newPanel.attr('id') === 'plaintext') {
           saveLoadDialog.dialog('option', 'buttons', {
