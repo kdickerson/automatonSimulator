@@ -203,6 +203,17 @@ var fsm = (function() {
     initStateEvents();
     initFSMSelectors();
     makeSaveLoadDialog();
+    
+    var exampleBox = $('#examples').on('change', function() {
+	  if ($(this).val() !== '') {
+		loadSerializedFSM(fsm_examples[$(this).val()]);
+		$(this).val('');
+	  }
+	});
+    $.each(fsm_examples, function(key, serializedFSM) {
+	  $('<option></option>', {value:key}).html(key).appendTo(exampleBox);
+	});
+	  
   };
   
   var makeStartState = function() {
@@ -436,7 +447,7 @@ var fsm = (function() {
       buttonUpdater(null, {newPanel: $('#saveLoadTabs div').eq($('#saveLoadTabs').tabs('option', 'active'))});
       
       refreshLocalStorageInfo();
-      $('#plaintext textarea').html(serializedModel);
+      $('#plaintext textarea').val(serializedModel);
       saveLoadDialog.dialog('open');
     }
   };
