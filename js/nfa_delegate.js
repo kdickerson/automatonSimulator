@@ -80,7 +80,8 @@ var nfa_delegate = (function() {
       title: 'Set Transition Character',
       height: 220,
       width: 350,
-      modal: true
+      modal: true,
+      open: function() {dialogDiv.find('input').focus().select();}
     });
   };
 
