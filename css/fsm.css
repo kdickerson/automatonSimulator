@@ -251,6 +251,11 @@ span.tranEnd:before {
 
   li.machineName {
     position: relative;
+    cursor: pointer;
+  }
+  
+  li.machineName:hover {
+    background-color: #aea;
   }
   
   li.machineName div.delete {
