@@ -29,6 +29,10 @@ h1 {
     text-align: center;
   }
   
+  #examples {
+    width: 200px;
+  }
+  
 h5 {
   margin-top: 2px;
   margin-bottom: 2px;
