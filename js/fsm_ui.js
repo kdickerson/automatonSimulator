@@ -110,6 +110,10 @@ var fsm = (function() {
       }
     });
     
+    // Load Bulk Tests
+    $('#acceptStrings').val(model.bulkTests.accept);
+    $('#rejectStrings').val(model.bulkTests.reject);
+    
     // Create states
     $.each(model.states, function(stateId, data) {
       var state = null;
@@ -315,6 +319,7 @@ var fsm = (function() {
       var finishLoading = function() {
         // TODO: Determine which type of load to do, get the serialized FSM, pass to loader
         var serializedFSM = saveLoadDialog.find('textarea').val();
+        
         loadSerializedFSM(serializedFSM);
       };
       
@@ -337,6 +342,10 @@ var fsm = (function() {
       container.find('div.state').each(function() {
         if ($(this).attr('id') !== 'start') {$.extend(model.states[$(this).attr('id')], $(this).position());}
       });
+      model.bulkTests = {
+        accept: $('#acceptStrings').val(), 
+        reject: $('#rejectStrings').val()
+      };
       var serializedModel = JSON.stringify(model);
       
       var finishSaving = function() {
