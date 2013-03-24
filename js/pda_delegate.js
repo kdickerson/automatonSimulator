@@ -139,7 +139,7 @@ var pda_delegate = (function() {
       height: 220,
       width: 350,
       modal: true,
-      open: function() {dialogDiv.find('input').focus().select();}
+      open: function() {dialogDiv.find('input').eq(0).focus().select();}
     });
   };
 
