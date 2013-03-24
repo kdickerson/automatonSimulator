@@ -63,8 +63,11 @@ var fsm = (function() {
       event.stopPropagation();
       localStorage.removeItem($(this).closest('li.machineName').find('span').html());
       refreshLocalStorageInfo();
-    }).on('click', 'li.machineName', function(event) {
+    }).on('click', 'li.machineName', function(event) { // select the machineName
       $('#machineName').val($(this).find('span').html()).focus();
+    }).on('dblclick', 'li.machineName', function(event) {	// immediately load the machineName
+      $('#machineName').val($(this).find('span').html());
+      saveLoadDialog.parent().find('.ui-dialog-buttonpane button').eq(-1).trigger('click');
     });
   };
   
