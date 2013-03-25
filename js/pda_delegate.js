@@ -189,6 +189,8 @@ var pda_delegate = (function() {
     
     updateUI: updateUIForDebug,
     
+    getEmptyLabel: function() {return emptyLabel;},
+    
     reset: function() {
       pda = new PDA();
       return self;

@@ -3,6 +3,7 @@ function NFA(useDefaults) {
   this.transitions = {};
   this.startState = useDefaults ? 'start' : null;
   this.acceptStates = useDefaults ? ['accept'] : [];
+  this.nextStep = null;
   
   this.processor = {
     input: null,
@@ -103,7 +104,7 @@ NFA.prototype.status = function() {
     states: this.processor.states,
     input: this.processor.input,
     inputIndex: this.processor.inputIndex,
-    nextChar: this.processor.input.substr(this.processor.inputIndex, 1),
+    nextChar: this.processor.status === 'Active' ? (this.nextStep === 'epsilons' ? '' : this.processor.input.substr(this.processor.inputIndex, 1)) : null,
     status: this.processor.status
   };
 };
@@ -114,22 +115,30 @@ NFA.prototype.stepInit = function(input) {
   this.processor.inputIndex = 0;
   this.processor.states = [this.startState];
   this.processor.status = 'Active';
-  this.followEpsilonTransitions();
+  this.nextStep = 'epsilons';
   return this.updateStatus();
 };
 NFA.prototype.step = function() {
-  var newStates = [];
-  var char = this.processor.input.substr(this.processor.inputIndex, 1);
-  var state = null;
-  while (state = this.processor.states.shift()) {
-    var tranStates = this.transition(state, char);
-    if (tranStates) {$.each(tranStates, function(index, tranState) {
-        if (newStates.indexOf(tranState) === -1) {newStates.push(tranState);}
-    });}
-  };
-  ++this.processor.inputIndex;
-  this.processor.states = newStates;
-  this.followEpsilonTransitions();
+  switch (this.nextStep) {
+    case 'epsilons':
+      this.followEpsilonTransitions();
+      this.nextStep = 'input';
+      break;
+    case 'input':
+      var newStates = [];
+      var char = this.processor.input.substr(this.processor.inputIndex, 1);
+      var state = null;
+      while (state = this.processor.states.shift()) {
+        var tranStates = this.transition(state, char);
+        if (tranStates) {$.each(tranStates, function(index, tranState) {
+            if (newStates.indexOf(tranState) === -1) {newStates.push(tranState);}
+        });}
+      };
+      ++this.processor.inputIndex;
+      this.processor.states = newStates;
+      this.nextStep = 'epsilons';
+      break;
+  }
   return this.updateStatus();
 };
 NFA.prototype.followEpsilonTransitions = function() {

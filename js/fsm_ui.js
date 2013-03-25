@@ -186,8 +186,14 @@ var fsm = (function() {
   
   var updateStatusUI = function(status) {
     $('#fsmDebugInputStatus span.consumedInput').html(status.input.substring(0, status.inputIndex));
-    $('#fsmDebugInputStatus span.currentInput').html(status.input.substr(status.inputIndex, 1));
-    $('#fsmDebugInputStatus span.futureInput').html(status.input.substring(status.inputIndex+1));
+    if (status.nextChar === '') {
+      $('#fsmDebugInputStatus span.currentInput').html(delegate.getEmptyLabel());
+      $('#fsmDebugInputStatus span.futureInput').html(status.input.substring(status.inputIndex));
+    } else {
+      $('#fsmDebugInputStatus span.currentInput').html(status.input.substr(status.inputIndex, 1));
+      $('#fsmDebugInputStatus span.futureInput').html(status.input.substring(status.inputIndex+1));
+    }
+    
   };
   
   var connectionClicked = function(connection) {

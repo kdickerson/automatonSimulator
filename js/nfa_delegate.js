@@ -16,17 +16,17 @@ var nfa_delegate = (function() {
       connection.setPaintStyle(jsPlumb.Defaults.PaintStyle);
     });
     
-    if (status.status === 'Active') {
-      $.each(status.states, function(index, state) {
-        var curState = $('#' + state).addClass('current');
-        jsPlumb.select({source:state}).each(function(connection) {
-          if (connection.getLabel() === status.nextChar) {
-            statusConnectors.push(connection);
-            connection.setPaintStyle({strokeStyle:'#0a0'});
-          }
-        });
+    var comparisonChar = status.nextChar === '' ? emptyLabel : status.nextChar;
+    console.log('comparisonChar', comparisonChar);
+    $.each(status.states, function(index, state) {
+      var curState = $('#' + state).addClass('current');
+      jsPlumb.select({source:state}).each(function(connection) {
+        if (connection.getLabel() === comparisonChar) {
+          statusConnectors.push(connection);
+          connection.setPaintStyle({strokeStyle:'#0a0'});
+        }
       });
-    }
+    });
     return self;
   };
 
@@ -124,6 +124,8 @@ var nfa_delegate = (function() {
     },
     
     updateUI: updateUIForDebug,
+    
+    getEmptyLabel: function() {return emptyLabel;},
     
     reset: function() {
       nfa = new NFA();

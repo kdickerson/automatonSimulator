@@ -124,6 +124,8 @@ var dfa_delegate = (function() {
     
     updateUI: updateUIForDebug,
     
+    getEmptyLabel: function() {return null;},
+    
     reset: function() {
       dfa = new DFA();
       return self;
