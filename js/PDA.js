@@ -3,6 +3,7 @@ function PDA(useDefaults) {
   this.transitions = {}; // state -> inputChar -> stackPopChar -> stateStackPushCharPairs {state:'', stackPushChar:''}
   this.startState = useDefaults ? 'start' : null;
   this.acceptStates = useDefaults ? ['accept'] : [];
+  this.nextStep = null;
   
   this.processor = {
     input: null,
@@ -176,7 +177,7 @@ PDA.prototype.status = function() {
     stateStackPairs: this.processor.stateStackPairs,
     input: this.processor.input,
     inputIndex: this.processor.inputIndex,
-    nextChar: this.processor.input.substr(this.processor.inputIndex, 1),
+    nextChar: this.processor.status === 'Active' ? (this.nextStep === 'epsilons' ? '' : this.processor.input.substr(this.processor.inputIndex, 1)) : null,
     status: this.processor.status
   };
 };
@@ -187,24 +188,32 @@ PDA.prototype.stepInit = function(input) {
   this.processor.inputIndex = 0;
   this.processor.stateStackPairs = [{state:this.startState, stack:[]}];
   this.processor.status = 'Active';
-  this.followEpsilonInputTransitions();
+  this.nextStep = 'epsilons';
   return this.updateStatus();
 };
 
 PDA.prototype.step = function() {
-  var self = this;
-  var newStateStackPairs = [];
-  var char = this.processor.input.substr(this.processor.inputIndex, 1);
-  var stateStackPair = null;
-  while (stateStackPair = this.processor.stateStackPairs.shift()) {
-    var tranStateStackPairs = this.transition(stateStackPair.state, char, stateStackPair.stack);
-    $.each(tranStateStackPairs, function(index, tranStateStackPair) {
-        self.addToIfUnique(newStateStackPairs, tranStateStackPair);
-    });
-  };
-  ++this.processor.inputIndex;
-  this.processor.stateStackPairs = newStateStackPairs;
-  this.followEpsilonInputTransitions();
+  switch (this.nextStep) {
+    case 'epsilons':
+      this.followEpsilonInputTransitions();
+      this.nextStep = 'input';
+      break;
+    case 'input':
+      var self = this;
+      var newStateStackPairs = [];
+      var char = this.processor.input.substr(this.processor.inputIndex, 1);
+      var stateStackPair = null;
+      while (stateStackPair = this.processor.stateStackPairs.shift()) {
+        var tranStateStackPairs = this.transition(stateStackPair.state, char, stateStackPair.stack);
+        $.each(tranStateStackPairs, function(index, tranStateStackPair) {
+            self.addToIfUnique(newStateStackPairs, tranStateStackPair);
+        });
+      };
+      ++this.processor.inputIndex;
+      this.processor.stateStackPairs = newStateStackPairs;
+      this.nextStep = 'epsilons';
+      break;
+  }
   return this.updateStatus();
 };
 PDA.prototype.followEpsilonInputTransitions = function() {
