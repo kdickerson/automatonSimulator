@@ -76,6 +76,7 @@ h5 {
   min-height: 330px;
   border: 1px solid #aaa;
   position: relative;
+  overflow: auto;
 }
 
   #start {
