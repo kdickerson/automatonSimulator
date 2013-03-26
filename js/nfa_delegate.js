@@ -17,7 +17,6 @@ var nfa_delegate = (function() {
     });
     
     var comparisonChar = status.nextChar === '' ? emptyLabel : status.nextChar;
-    console.log('comparisonChar', comparisonChar);
     $.each(status.states, function(index, state) {
       var curState = $('#' + state).addClass('current');
       jsPlumb.select({source:state}).each(function(connection) {
