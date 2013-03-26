@@ -189,6 +189,9 @@ var fsm = (function() {
     if (status.nextChar === '') {
       $('#fsmDebugInputStatus span.currentInput').html(delegate.getEmptyLabel());
       $('#fsmDebugInputStatus span.futureInput').html(status.input.substring(status.inputIndex));
+    } else if (status.nextChar === null) {
+      $('#fsmDebugInputStatus span.currentInput').html('[End of Input]');
+      $('#fsmDebugInputStatus span.futureInput').html('');
     } else {
       $('#fsmDebugInputStatus span.currentInput').html(status.input.substr(status.inputIndex, 1));
       $('#fsmDebugInputStatus span.futureInput').html(status.input.substring(status.inputIndex+1));
@@ -378,7 +381,6 @@ var fsm = (function() {
       $('#acceptStrings').val('');
       $('#rejectStrings').val('');
       $('#resultConsole').empty();
-      
       return self;
     },
     

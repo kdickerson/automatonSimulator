@@ -3,7 +3,6 @@ function PDA(useDefaults) {
   this.transitions = {}; // state -> inputChar -> stackPopChar -> stateStackPushCharPairs {state:'', stackPushChar:''}
   this.startState = useDefaults ? 'start' : null;
   this.acceptStates = useDefaults ? ['accept'] : [];
-  this.nextStep = null;
   
   this.processor = {
     input: null,
@@ -11,6 +10,7 @@ function PDA(useDefaults) {
     inputLength: 0,
     stateStackPairs: [],
     status: null,
+    nextStep: null
   };
 }
 
@@ -173,11 +173,19 @@ PDA.prototype.accepts = function(input) {
 };
 
 PDA.prototype.status = function() {
+  var nextChar = null;
+  if (this.processor.status === 'Active') {
+    if (this.processor.nextStep === 'input' && this.processor.input.length > this.processor.inputIndex) {
+      nextChar = this.processor.input.substr(this.processor.inputIndex, 1);
+    } else if (this.processor.nextStep === 'epsilons') {
+      nextChar = '';
+    }
+  }
   return {
     stateStackPairs: this.processor.stateStackPairs,
     input: this.processor.input,
     inputIndex: this.processor.inputIndex,
-    nextChar: this.processor.status === 'Active' ? (this.nextStep === 'epsilons' ? '' : this.processor.input.substr(this.processor.inputIndex, 1)) : null,
+    nextChar: nextChar,
     status: this.processor.status
   };
 };
@@ -188,15 +196,15 @@ PDA.prototype.stepInit = function(input) {
   this.processor.inputIndex = 0;
   this.processor.stateStackPairs = [{state:this.startState, stack:[]}];
   this.processor.status = 'Active';
-  this.nextStep = 'epsilons';
+  this.processor.nextStep = 'epsilons';
   return this.updateStatus();
 };
 
 PDA.prototype.step = function() {
-  switch (this.nextStep) {
+  switch (this.processor.nextStep) {
     case 'epsilons':
       this.followEpsilonInputTransitions();
-      this.nextStep = 'input';
+      this.processor.nextStep = 'input';
       break;
     case 'input':
       var self = this;
@@ -211,7 +219,7 @@ PDA.prototype.step = function() {
       };
       ++this.processor.inputIndex;
       this.processor.stateStackPairs = newStateStackPairs;
-      this.nextStep = 'epsilons';
+      this.processor.nextStep = 'epsilons';
       break;
   }
   return this.updateStatus();
