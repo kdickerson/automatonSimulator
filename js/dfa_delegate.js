@@ -13,15 +13,13 @@ var dfa_delegate = (function() {
     $('.current').removeClass('current');
     if (statusConnector) {statusConnector.setPaintStyle(jsPlumb.Defaults.PaintStyle);}
     
-    if (status.status === 'Active') {
-      var curState = $('#' + status.state).addClass('current');
-      jsPlumb.select({source:status.state}).each(function(connection) {
-        if (connection.getLabel() === status.nextChar) {
-          statusConnector = connection;
-          connection.setPaintStyle({strokeStyle:'#0a0'});
-        }
-      });
-    }
+    var curState = $('#' + status.state).addClass('current');
+    jsPlumb.select({source:status.state}).each(function(connection) {
+      if (connection.getLabel() === status.nextChar) {
+        statusConnector = connection;
+        connection.setPaintStyle({strokeStyle:'#0a0'});
+      }
+    });
     return self;
   };
 
