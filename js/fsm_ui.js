@@ -208,6 +208,7 @@ var fsm = (function() {
     
     $(window).resize(function() {
       container.height($(window).height() - $('#mainHolder h1').outerHeight() - $('#footer').outerHeight() - $('#bulkResultHeader').outerHeight() - $('#resultConsole').outerHeight() - 30 + 'px');
+      jsPlumb.repaintEverything();
     });
     $(window).resize();
     
