@@ -203,6 +203,13 @@ var fsm = (function() {
 		delegate.connectionClicked(connection);
 	};
 
+	var checkHashForModel = function() {
+		var hash = window.location.hash;
+		hash = hash.replace('#', '');
+		hash = decodeURIComponent(hash);
+		if (hash) {loadSerializedFSM(hash);}
+	};
+
 	var domReadyInit = function() {
 		self.setGraphContainer($('#machineGraph'));
 
@@ -229,6 +236,8 @@ var fsm = (function() {
 		$.each(fsm_examples, function(key, serializedFSM) {
 			$('<option></option>', {value:key}).html(key).appendTo(exampleBox);
 		});
+
+		checkHashForModel();
 	};
 
 	var makeStartState = function() {
