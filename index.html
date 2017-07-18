@@ -5,13 +5,13 @@
     <meta charset="utf-8">
     <meta name="description" content="Finite State Machine simulator for Deterministic Finite Automata, Non-Deterministic Finite Automata, and Push-Down Automata." />
 		<meta name="author" content="Kyle Dickerson" />
-    
+
     <title>Automaton Simulator</title>
     <link rel="stylesheet" type="text/css" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
     <link rel="stylesheet" type="text/css" href="css/fsm.css" />
     <link rel="shortcut icon" href="favicon.ico" />
   </head>
-  
+
   <body>
     <div id="tools">
       <div style="text-align:center;">
@@ -27,7 +27,7 @@
         <button id="debugBtn" onclick="fsm.debug($('#testString').val());" class="image" title="Start/Step Debug"><img src="images/empty.png" /></button>
       </div>
       <div id="testResult">&nbsp;</div>
-      
+
       <hr />
       <h5>
         Bulk Testing
@@ -39,14 +39,14 @@
       <label>Reject (one per line):</label>
       <textarea id="rejectStrings"></textarea>
     </div>
-    
+
     <div id="mainHolder">
       <h1>
           Automaton Simulator:
           <button class="delegate" disabled="disabled" title="Deterministic Finite Automaton">DFA</button>
           <button class="delegate" title="Non-Deterministic Finite Automaton">NFA</button>
           <button class="delegate" title="Pushdown Automaton">PDA</button>
-          
+
           <button id="resetBtn" onclick="fsm.reset();" class="image" title="Reset"><img src="images/empty.png" /></button>
           <select id="examples">
             <option value="">Examples</option>
@@ -65,21 +65,21 @@
       </h5>
       <div id="resultConsole"></div>
     </div>
-    
+
     <div id="footer">
 			<div>
-	      <a href="http://www.linkedin.com/in/kyledickerson/">Kyle Dickerson</a> 
-      
+	      <a href="http://www.linkedin.com/in/kyledickerson/">Kyle Dickerson</a>
+
   	    <a href="//plus.google.com/111960029093387822677?prsrc=3" rel="publisher" style="text-decoration:none;">
   	      <img src="images/gplus-16.png" alt="Google+" style="border:0;width:16px;height:16px;vertical-align:middle;"/>
   	    </a>
-      
+
   	    -- Tools:
         <a href="http://jquery.com/">jQuery</a>&nbsp;&nbsp;
         <a href="http://www.jsplumb.org/jquery/demo.html">jsPlumb</a>&nbsp;&nbsp;
         Icons:
         <a href="http://www.fatcow.com/free-icons">FatCow</a>
-			</div>	
+			</div>
 			<div>
 				Help me pay for this:
 				<a href="https://payments.amazon.com/sdui/sdui/home">Amazon&nbsp;Payments</a>
@@ -88,7 +88,7 @@
 				<a href="http://amzn.com/w/2IFL13YKDN2WN">Amazon Wishlist</a>
 			</div>
     </div>
-    
+
     <div id="saveLoadDialog">
       <div id="saveLoadTabs">
         <ul>
@@ -104,7 +104,7 @@
         <div id="plaintext"><textarea></textarea></div>
       </div>
     </div>
-    
+
     <script src="js/jquery-1.9.0.min.js"></script>
     <script src="js/jquery-ui-1.10.0.custom.min.js"></script>
     <script src="js/jquery.jsPlumb-1.3.16-all-min.js"></script>
