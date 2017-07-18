@@ -28,14 +28,14 @@ h1 {
     letter-spacing: 2px;
     text-align: center;
   }
-  
+
   #examples {
     max-width: 200px;
     letter-spacing: normal;
     word-spacing: normal;
     text-align: left;
   }
-  
+
 h5 {
   margin-top: 2px;
   margin-bottom: 2px;
@@ -55,14 +55,14 @@ h5 {
     margin-right: 10px;
     border-radius: 8px;
   }
-  
+
   #tools input[type="text"], #tools textarea {
     width: 170px;
   }
   #tools textarea {
     height: 145px;
   }
-  
+
   #tools label {
     font-size: smaller;
   }
@@ -97,11 +97,11 @@ h5 {
     border-radius: 15px;
     text-align: center;
   }
-    
+
     div.dragHover {
       background-color: #aff;
     }
-    
+
     div.current {
       background-color: #8c8;
     }
@@ -132,7 +132,7 @@ h5 {
 div.delete {
   width: 20px;
   height: 20px;
-  line-height: 20px; 
+  line-height: 20px;
   text-align: center;
   color: #aaa;
   z-index: 100;
@@ -190,15 +190,15 @@ div.delete:hover {
   #resultConsole div {
     padding-left: 5px;
   }
-  
+
   .pending {
     background-color: #bbf;
   }
-  
+
   .Pass {
     background-color: #bfb;
   }
-  
+
   .Fail {
     background-color: #fbb;
   }
@@ -261,11 +261,11 @@ span.tranEnd:before {
     position: relative;
     cursor: pointer;
   }
-  
+
   li.machineName:hover {
     background-color: #aea;
   }
-  
+
   li.machineName div.delete {
     position: absolute;
     top: 0;
