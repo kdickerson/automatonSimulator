@@ -17,12 +17,11 @@ h1 {
   }
 
   button.delegate {
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
     padding-left: 4px;
     padding-right: 4px;
     display: inline-block;
-    width: 45px;
     vertical-align: middle;
     font-size: 10pt;
     letter-spacing: 2px;
@@ -54,6 +53,10 @@ h5 {
     margin-left: 10px;
     margin-right: 10px;
     border-radius: 8px;
+  }
+
+  #tools button {
+    margin: 2px;
   }
 
   #tools input[type="text"], #tools textarea {
