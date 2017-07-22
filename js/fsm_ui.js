@@ -458,8 +458,10 @@ var fsm = (function() {
 						Cancel: function(){saveLoadDialog.dialog('close');},
 						Save: function(){if (finishSaving()) {saveLoadDialog.dialog('close');}}
 					});
-				} else if (ui.newPanel.attr('id') === 'plaintext') {
+				} else if (ui.newPanel.attr('id') === 'plaintext' || ui.newPanel.attr('id') === 'shareableURL') {
+					ui.newPanel.find('textarea').select();
 					saveLoadDialog.dialog('option', 'buttons', {
+						Copy: function(){ui.newPanel.find('textarea').select();document.execCommand('copy')},
 						Close: function(){saveLoadDialog.dialog('close');}
 					});
 				}
@@ -471,6 +473,7 @@ var fsm = (function() {
 
 			refreshLocalStorageInfo();
 			$('#plaintext textarea').val(serializedModel);
+			$('#shareableURL textarea').val(window.location.href.split("#")[0] + '#' + encodeURIComponent(serializedModel));
 			saveLoadDialog.dialog('open');
 		}
 	};
