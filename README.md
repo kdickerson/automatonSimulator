@@ -1,5 +1,5 @@
 # automatonSimulator
-A website that simulates various finite state machines: DFA, NFA, PDA.
+A website that simulates various finite state machines: Deterministic Finite Automata (DFA), Nondeterministic Finite Automata (NFA), Pushdown Automata (PDA).
 
 A GUI is provided to create, save/load (browser local storage), export/import (plaintext format), and debug finite state machines.
 
