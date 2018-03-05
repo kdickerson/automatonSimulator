@@ -259,7 +259,7 @@ var fsm = (function() {
 		var source = state.find('.plumbSource');
 		jsPlumb.makeSource(source, {
 			parent: state,
-			maxConnections: 5,
+			maxConnections: 10,
 			onMaxConnections:function(info, e) {
 				alert("Maximum connections (" + info.maxConnections + ") reached");
 			},
