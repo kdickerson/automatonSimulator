@@ -222,6 +222,10 @@ var fsm = (function() {
 		// Setup handling 'enter' in test string box
 		$('#testString').keyup(function(event) {if (event.which === $.ui.keyCode.ENTER) {$('#testBtn').trigger('click');}});
 
+		container.dblclick(function(event) {
+			self.addState({top: event.offsetY, left: event.offsetX});
+		});
+
 		initJsPlumb();
 		initStateEvents();
 		initFSMSelectors();
@@ -298,9 +302,13 @@ var fsm = (function() {
 			return self;
 		},
 
-		addState: function() {
+		addState: function(location) {
 			while ($('#s'+stateCounter).length > 0) {++stateCounter;} // Prevent duplicate states after loading
 			var state = makeState('s' + stateCounter);
+			if (location && location.left && location.top) {
+				state.css('left', location.left + 'px')
+				.css('top', location.top + 'px');
+			}
 			container.append(state);
 			jsPlumb.draggable(state, {containment:"parent"});
 			makeStatePlumbing(state);
