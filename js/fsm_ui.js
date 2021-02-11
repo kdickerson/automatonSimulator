@@ -100,9 +100,12 @@ var fsm = (function() {
 		}).on('mouseout', 'div.state', function(event) {
 			$(this).find('div.delete').hide();
 		});
-		container.on('click', 'div.delete', function(event) {
+		container.on('click', 'img.delete', function(event) {
 			self.removeState($(this).closest('div.state'));
 		});
+		container.on('click', 'span.stateName', function(event) {
+			self.renameState($(this).closest('div.state'));
+		})
 
 		// Setup handling for accept state changes
 		container.on('change', 'input[type="checkbox"].isAccept', function(event) {
@@ -161,7 +164,7 @@ var fsm = (function() {
 		$.each(model.states, function(stateId, data) {
 			var state = null;
 			if (stateId !== 'start') {
-				state = makeState(stateId)
+				state = makeState(stateId, data.displayId)
 					.css('left', data.left + 'px')
 					.css('top', data.top + 'px')
 					.appendTo(container);
@@ -251,12 +254,18 @@ var fsm = (function() {
 		makeStatePlumbing(startState);
 	};
 
-	var makeState = function(stateId) {
-		return $('<div id="' + stateId + '" class="state"></div>')
+	/**
+	 * Create a new state.
+	 * @param {string} stateId Internal ID of the new state.
+	 * @param {string} [displayId] Displayed ID of the state, by default the internal ID.
+	 */
+	var makeState = function(stateId, displayId) {
+		displayId = displayId || stateId;
+		return $('<div id="' + stateId + '" class="state" data-displayid="' + displayId + '"></div>')
 			.append('<input id="' + stateId+'_isAccept' + '" type="checkbox" class="isAccept" value="true" title="Accept State" />')
-			.append(stateId)
+			.append('<span class="stateName">' + displayId + '</span>')
 			.append('<div class="plumbSource" title="Drag from here to create new transition">&nbsp;</div>')
-			.append('<div class="delete" style="display:none;" title="Delete"><img class="delete" src="images/empty.png" /></div>');
+			.append('<div class="delete" style="display:none;"><img class="delete" src="images/empty.png"  title="Delete"/></div>');
 	};
 
 	var makeStatePlumbing = function(state) {
@@ -314,6 +323,21 @@ var fsm = (function() {
 			makeStatePlumbing(state);
 			// Do nothing to model
 			return self;
+		},
+
+		/**
+		 * Change the displayed name of a state. The start state cannot
+		 * be renamed, it’s a no-op if the given state is the start state.
+		 * @param {jQuery} state The state to rename.
+		 */
+		renameState: function(state) {
+			if (state.attr('id') !== 'start') {
+				var newname = window.prompt('New name', state.data('displayid'));
+				if (newname) {
+					state.data('displayid', newname);
+					state.find('.stateName').text(newname);
+				}
+			}
 		},
 
 		removeState: function(state) {
@@ -440,7 +464,11 @@ var fsm = (function() {
 		save: function() {
 			var model = delegate.serialize();
 			container.find('div.state').each(function() {
-				if ($(this).attr('id') !== 'start') {$.extend(model.states[$(this).attr('id')], $(this).position());}
+				var id = $(this).attr('id');
+				if (id !== 'start') {
+					$.extend(model.states[id], $(this).position());
+					$.extend(model.states[id], {displayId: $(this).data('displayid')});
+				}
 			});
 			model.bulkTests = {
 				accept: $('#acceptStrings').val(),
