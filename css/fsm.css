@@ -91,7 +91,8 @@ h5 {
 
   div.state {
     position: absolute;
-    width: 100px;
+    display: flex;
+    min-width: 100px;
     height: 30px;
     line-height: 30px;
     background-color: #add;
@@ -110,26 +111,36 @@ h5 {
     }
 
     div.plumbSource {
-      position: absolute;
+      position: relative;
+      display: inline-block;
       width: 20px;
       height: 20px;
-      right: 5px;
+      margin: 0 5px;
       top: 5px;
       background-color: #55a;
       cursor: pointer;
       border-radius: 6px;
     }
 
+    span.stateName {
+      flex-grow: 1;
+    }
+
     input[type="checkbox"].isAccept {
-      position: absolute;
-      top: 5px;
-      left: 5px;
+      margin: 5px;
+      height: 20px;
     }
 
     div.state div.delete {
       position: absolute;
+      left: 0;
+      width: 100%;
+      height: 0;
+    }
+    div.state img.delete {
+      position: relative;
       top: -18px;
-      left: 40px;
+      cursor: pointer;
     }
 
 div.delete {
@@ -139,10 +150,6 @@ div.delete {
   text-align: center;
   color: #aaa;
   z-index: 100;
-}
-
-div.delete:hover {
-  cursor: pointer;
 }
 
 #fsmDebugInputStatus {
