@@ -8,17 +8,17 @@ var pda_delegate = (function() {
   
   var statusConnectors = [];
   
-  var makeConnectionLabel = function(inputChar, popChar, pushChar) {
-    return (inputChar || emptyLabel) + ',' + (popChar || emptyLabel) + ',' + (pushChar || emptyLabel);
+  var makeConnectionLabel = function(inputChar, popChar, pushChars) {
+    return (inputChar || emptyLabel) + ',' + (popChar || emptyLabel) + ',' + (pushChars || emptyLabel);
   };
   
   var decodeConnectionLabel = function(label) {
     var pieces = label.split(',');
     if (pieces.length !== 3) {return null;}
-    var decoded = {inputChar:pieces[0], popChar:pieces[1], pushChar:pieces[2]};
+    var decoded = {inputChar:pieces[0], popChar:pieces[1], pushChars:pieces[2]};
     if (decoded.inputChar === emptyLabel) {decoded.inputChar = '';}
     if (decoded.popChar === emptyLabel) {decoded.popChar = '';}
-    if (decoded.pushChar === emptyLabel) {decoded.pushChar = '';}
+    if (decoded.pushChars === emptyLabel) {decoded.pushChars = '';}
     return decoded;
   };
   
@@ -68,7 +68,7 @@ var pda_delegate = (function() {
       jsPlumb.select({source:ssp.state}).each(function(connection) {
         var connLabelParts = connection.getLabel().split(',');
         // Don't care about the pushChar here
-        if (connLabelParts[0] === sspLabelParts[0] && 
+        if (connLabelParts[0] === sspLabelParts[0] &&
               (connLabelParts[1] === sspLabelParts[1] || connLabelParts[1] === emptyLabel)) {
           statusConnectors.push(connection);
           connection.setPaintStyle({strokeStyle:'#0a0'});
@@ -81,21 +81,21 @@ var pda_delegate = (function() {
   var dialogSave = function(update) {
     var inputChar = $('#pda_dialog_readCharTxt').val();
     var popChar = $('#pda_dialog_popCharTxt').val();
-    var pushChar = $('#pda_dialog_pushCharTxt').val();
+    var pushChars = $('#pda_dialog_pushCharsTxt').val();
     if (inputChar.length > 1) {inputChar = inputChar[0];}
     if (popChar.length > 1) {popChar = popChar[0];}
-    if (pushChar.length > 1) {pushChar = pushChar[0];}
+    if (pushChars.length > 10) {pushChars = pushChars.slice(0, 10);}
     
     if (update) {
       var labelPieces = decodeConnectionLabel(dialogActiveConnection.getLabel());
-      pda.removeTransition(dialogActiveConnection.sourceId, labelPieces.inputChar, labelPieces.popChar, labelPieces.pushChar, dialogActiveConnection.targetId);
-    } else if (pda.hasTransition(dialogActiveConnection.sourceId, inputChar, popChar, pushChar, dialogActiveConnection.targetId)) {
-      alert(info.sourceId + " already has a transition to " + info.targetId + " on " + 
-            makeConnectionLabel(inputChar, popChar, pushChar));
+      pda.removeTransition(dialogActiveConnection.sourceId, labelPieces.inputChar, labelPieces.popChar, labelPieces.pushChars, dialogActiveConnection.targetId);
+    } else if (pda.hasTransition(dialogActiveConnection.sourceId, inputChar, popChar, pushChars, dialogActiveConnection.targetId)) {
+      alert(info.sourceId + " already has a transition to " + info.targetId + " on " +
+            makeConnectionLabel(inputChar, popChar, pushChars));
       return;
     }
-    dialogActiveConnection.setLabel(makeConnectionLabel(inputChar, popChar, pushChar));
-    pda.addTransition(dialogActiveConnection.sourceId, inputChar, popChar, pushChar, dialogActiveConnection.targetId);
+    dialogActiveConnection.setLabel(makeConnectionLabel(inputChar, popChar, pushChars));
+    pda.addTransition(dialogActiveConnection.sourceId, inputChar, popChar, pushChars, dialogActiveConnection.targetId);
     dialogDiv.dialog("close");
   };
 
@@ -106,7 +106,7 @@ var pda_delegate = (function() {
   
   var dialogDelete = function() {
     var labelPieces = decodeConnectionLabel(dialogActiveConnection.getLabel());
-    pda.removeTransition(dialogActiveConnection.sourceId, labelPieces.inputChar, labelPieces.popChar, labelPieces.pushChar, dialogActiveConnection.targetId);
+    pda.removeTransition(dialogActiveConnection.sourceId, labelPieces.inputChar, labelPieces.popChar, labelPieces.pushChars, dialogActiveConnection.targetId);
     fsm.removeConnection(dialogActiveConnection);
     dialogDiv.dialog("close");
   };
@@ -123,7 +123,7 @@ var pda_delegate = (function() {
     $('<span></span>', {id:'pda_dialog_stateA', 'class':'tranStart'}).appendTo(dialogDiv);
     $('<input />', {id:'pda_dialog_readCharTxt', type:'text', maxlength:1, style:'width:30px;text-align:center;', title:'Read from Input'}).val('A').appendTo(dialogDiv);
     $('<input />', {id:'pda_dialog_popCharTxt', type:'text', maxlength:1, style:'width:30px;text-align:center;', title:'Pop from Stack'}).val('').appendTo(dialogDiv);
-    $('<input />', {id:'pda_dialog_pushCharTxt', type:'text', maxlength:1, style:'width:30px;text-align:center;', title:'Push to Stack'}).val('').appendTo(dialogDiv);
+    $('<input />', {id:'pda_dialog_pushCharsTxt', type:'text', maxlength:10, style:'width:60px;text-align:center;', title:'Push to Stack'}).val('').appendTo(dialogDiv);
     dialogDiv.find('input').keypress(function(event) {
       if (event.which === $.ui.keyCode.ENTER) {dialogDiv.parent().find('div.ui-dialog-buttonset button').eq(-1).click();}
     });
@@ -135,7 +135,7 @@ var pda_delegate = (function() {
       autoOpen: false,
       title: 'Set Transition Characters',
       height: 220,
-      width: 350,
+      width: 380,
       modal: true,
       open: function() {dialogDiv.find('input').eq(0).focus().select();}
     });
@@ -176,7 +176,7 @@ var pda_delegate = (function() {
       var labelPieces = decodeConnectionLabel(dialogActiveConnection.getLabel());
       $('#pda_dialog_readCharTxt').val(labelPieces.inputChar);
       $('#pda_dialog_popCharTxt').val(labelPieces.popChar);
-      $('#pda_dialog_pushCharTxt').val(labelPieces.pushChar);
+      $('#pda_dialog_pushCharsTxt').val(labelPieces.pushChars);
       
       dialogDiv.dialog('option', 'buttons', {
         Cancel: function(){dialogCancel(true);},
@@ -220,7 +220,7 @@ var pda_delegate = (function() {
           $.each(popCharBase, function(popChar, stateStackPairs) {
             $.each(stateStackPairs, function(idx, ssp) {
               model.states[ssp.state] = {};
-              model.transitions.push({stateA:stateA, label:makeConnectionLabel(inputChar, popChar, ssp.stackPushChar), stateB:ssp.state});
+              model.transitions.push({stateA:stateA, label:makeConnectionLabel(inputChar, popChar, ssp.stackPushChars), stateB:ssp.state});
             });
           });
         });

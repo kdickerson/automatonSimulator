@@ -1,6 +1,6 @@
 function PDA(useDefaults) {
   "use strict";
-  this.transitions = {}; // state -> inputChar -> stackPopChar -> stateStackPushCharPairs {state:'', stackPushChar:''}
+  this.transitions = {}; // state -> inputChar -> stackPopChar -> stateStackPushCharPairs {state:'', stackPushChars:''}
   this.startState = useDefaults ? 'start' : null;
   this.acceptStates = useDefaults ? ['accept'] : [];
   
@@ -49,9 +49,9 @@ PDA.prototype.transition = function(state, inputChar, stack) {
     if (tmp['']) {
       $.each(tmp[''], function(index, stateStackPair) {
         var newStack = stack.slice();
-        if (stateStackPair.stackPushChar) {
-          newStack.push(stateStackPair.stackPushChar);
-        }
+        stateStackPair.stackPushChars.split('').forEach(function(stackPushChar) {
+          newStack.push(stackPushChar);
+        });
         newStateStackPairs.push({state:stateStackPair.state, stack:newStack});
       });
     }
@@ -62,9 +62,9 @@ PDA.prototype.transition = function(state, inputChar, stack) {
     if (tmp[stackHead]) {
       $.each(tmp[stackHead], function(index, stateStackPair) {
         var newStack = newStackBase.slice();
-        if (stateStackPair.stackPushChar) {
-          newStack.push(stateStackPair.stackPushChar);
-        }
+        stateStackPair.stackPushChars.split('').forEach(function(stackPushChar) {
+          newStack.push(stackPushChar);
+        });
         newStateStackPairs.push({state:stateStackPair.state, stack:newStack});
       });
     }
@@ -76,6 +76,21 @@ PDA.prototype.deserialize = function(json) {
   this.transitions = json.transitions;
   this.startState = json.startState;
   this.acceptStates = json.acceptStates;
+
+  // Upgrade transitions to multiple-push-chars syntax:
+  $.each(this.transitions, function(state, chars) {
+    $.each(chars, function(char, stackPopChars) {
+      $.each(stackPopChars, function(stackPopChar, stateStackPairs) {
+        $.each(stateStackPairs, function(index, stateStackPair) {
+          if ('stackPushChar' in stateStackPair) {
+            stateStackPair['stackPushChars'] = stateStackPair['stackPushChar'];
+            delete stateStackPair.stackPushChar;
+          }
+        });
+      });
+    });
+  });
+
   return this;
 };
 PDA.prototype.serialize = function() {
@@ -91,21 +106,21 @@ PDA.prototype.saveToString = function() {
   return JSON.stringify(this.serialize());
 };
 
-PDA.prototype.addTransition = function(stateA, character, stackPopChar, stackPushChar, stateB) {
+PDA.prototype.addTransition = function(stateA, character, stackPopChar, stackPushChars, stateB) {
   if (!this.transitions[stateA]) {this.transitions[stateA] = {};}
   if (!this.transitions[stateA][character]) {this.transitions[stateA][character] = {};}
   if (!this.transitions[stateA][character][stackPopChar]) {this.transitions[stateA][character][stackPopChar] = [];}
-  this.transitions[stateA][character][stackPopChar].push({state:stateB, stackPushChar:stackPushChar});
+  this.transitions[stateA][character][stackPopChar].push({state:stateB, stackPushChars:stackPushChars});
   return this;
 };
 
-PDA.prototype.hasTransition = function(stateA, character, stackPopChar, stackPushChar, stateB) {
+PDA.prototype.hasTransition = function(stateA, character, stackPopChar, stackPushChars, stateB) {
   if (this.transitions[stateA] &&
       this.transitions[stateA][character] &&
       this.transitions[stateA][character][stackPopChar]) {
     var match = false;
     $.each(this.transitions[stateA][character][stackPopChar], function(index, stateStackPair) {
-      if (stateStackPair.state === stateB && stateStackPair.stackPushChar === stackPushChar) {
+      if (stateStackPair.state === stateB && stateStackPair.stackPushChars === stackPushChars) {
         match = true; return false; // return false breaks the iteration
       }
     });
@@ -121,14 +136,14 @@ PDA.prototype.removeTransitions = function(state) {
   $.each(self.transitions, function(stateA, inputCharBase) {
     $.each(inputCharBase, function(inputChar, stackPopBase) {
       $.each(stackPopBase, function(stackPopChar, stateStackPairs) {
-        var matchPushChar = null;
+        var matchPushChars = null;
         $.each(self.transitions[stateA][inputChar][stackPopChar], function(index, stateStackPair) {
           if (stateStackPair.state === state) {
-            matchPushChar = stateStackPair.stackPushChar; return false; // return false breaks the iteration
+            matchPushChars = stateStackPair.stackPushChars; return false; // return false breaks the iteration
           }
         });
-        if (matchPushChar !== null) {
-          self.removeTransition(stateA, inputChar, stackPopChar, matchPushChar, state)
+        if (matchPushChars !== null) {
+          self.removeTransition(stateA, inputChar, stackPopChar, matchPushChars, state)
         }
       });
     });
@@ -136,11 +151,11 @@ PDA.prototype.removeTransitions = function(state) {
   return this;
 };
 
-PDA.prototype.removeTransition = function(stateA, inputChar, stackPopChar, stackPushChar, stateB) {
-  if (this.hasTransition(stateA, inputChar, stackPopChar, stackPushChar, stateB)) {
+PDA.prototype.removeTransition = function(stateA, inputChar, stackPopChar, stackPushChars, stateB) {
+  if (this.hasTransition(stateA, inputChar, stackPopChar, stackPushChars, stateB)) {
     var stateStackIndex = null;
     $.each(this.transitions[stateA][inputChar][stackPopChar], function(index, stateStackPair) {
-      if (stateStackPair.state === stateB && stateStackPair.stackPushChar === stackPushChar) {
+      if (stateStackPair.state === stateB && stateStackPair.stackPushChars === stackPushChars) {
         stateStackIndex = index; return false; // return false breaks the iteration
       }
     });
@@ -347,6 +362,29 @@ PDA.runTests = function() {
     .addTransition('push', 'b', 'b', '', 'pop')
     .addTransition('pop', 'a', 'a', '', 'pop')
     .addTransition('pop', 'b', 'b', '', 'pop')
+    .addTransition('pop', '', '#', '', 'accept');
+  assert(myPDA.accepts('aa'), 'Accept aa');
+  assert(myPDA.accepts('abba'), 'Accept abba');
+  assert(myPDA.accepts('baaaab'), 'Accept baaaab');
+  assert(myPDA.accepts('bbbaabbb'), 'Accept bbbaabbb');
+  assert(!myPDA.accepts('a'), 'Reject a');
+  assert(!myPDA.accepts('b'), 'Reject b');
+  assert(!myPDA.accepts('aba'), 'Reject aba');
+  assert(!myPDA.accepts(''), 'Reject [empty]');
+
+  console.log('Multi-pusher Palindrome Tester PDA');
+  myPDA = new PDA(true)
+    .addTransition('start', '', '', '#', 'push')
+    .addTransition('push', 'a', '', 'azy', 'push')
+    .addTransition('push', 'b', '', 'brt', 'push')
+    .addTransition('push', 'a', 'y', '', 'popped_y')
+    .addTransition('popped_y', '', 'z', '', 'popped_z')
+    .addTransition('popped_z', '', 'a', '', 'pop')
+    .addTransition('push', 'b', 't', '', 'popped_t')
+    .addTransition('popped_t', '', 'r', '', 'popped_r')
+    .addTransition('popped_r', '', 'b', '', 'pop')
+    .addTransition('pop', 'a', 'y', '', 'popped_y')
+    .addTransition('pop', 'b', 't', '', 'popped_t')
     .addTransition('pop', '', '#', '', 'accept');
   assert(myPDA.accepts('aa'), 'Accept aa');
   assert(myPDA.accepts('abba'), 'Accept abba');
