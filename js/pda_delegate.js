@@ -23,14 +23,14 @@ var pda_delegate = (function() {
   };
   
   var addStackDataAndGetStackBox = function(stackStatePair) {
-    var stackSpan = $('<span class="futureInput stackBody"></span>').html(stackStatePair.stack.slice(0,-1).join(''));
     var headSpan = $('<span class="currentInput"></span>').html(stackStatePair.stack[stackStatePair.stack.length-1]);
+    var stackSpan = $('<span class="futureInput stackBody"></span>').html(stackStatePair.stack.slice(0,-1).reverse().join(''));
     var stackBoxId = stackStatePair.state + '_stackBox';
     var stackBox = $('#' + stackBoxId);
     if (stackBox.length === 0) {
       var stackBox = $('<div></div>', {id:stackBoxId, 'class':'fsmStatus'}).appendTo(container);
     }
-    $('<div></div>', {style:'margin-bottom:1px'}).append(stackSpan).append(headSpan).appendTo(stackBox);
+    $('<div></div>', {style:'margin-bottom:1px'}).append(headSpan).append(stackSpan).appendTo(stackBox);
     return stackBox;
   };
 

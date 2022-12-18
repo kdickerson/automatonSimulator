@@ -49,7 +49,7 @@ PDA.prototype.transition = function(state, inputChar, stack) {
     if (tmp['']) {
       $.each(tmp[''], function(index, stateStackPair) {
         var newStack = stack.slice();
-        stateStackPair.stackPushChars.split('').forEach(function(stackPushChar) {
+        stateStackPair.stackPushChars.split('').reverse().forEach(function(stackPushChar) {
           newStack.push(stackPushChar);
         });
         newStateStackPairs.push({state:stateStackPair.state, stack:newStack});
@@ -62,7 +62,7 @@ PDA.prototype.transition = function(state, inputChar, stack) {
     if (tmp[stackHead]) {
       $.each(tmp[stackHead], function(index, stateStackPair) {
         var newStack = newStackBase.slice();
-        stateStackPair.stackPushChars.split('').forEach(function(stackPushChar) {
+        stateStackPair.stackPushChars.split('').reverse().forEach(function(stackPushChar) {
           newStack.push(stackPushChar);
         });
         newStateStackPairs.push({state:stateStackPair.state, stack:newStack});
@@ -375,8 +375,8 @@ PDA.runTests = function() {
   console.log('Multi-pusher Palindrome Tester PDA');
   myPDA = new PDA(true)
     .addTransition('start', '', '', '#', 'push')
-    .addTransition('push', 'a', '', 'azy', 'push')
-    .addTransition('push', 'b', '', 'brt', 'push')
+    .addTransition('push', 'a', '', 'yza', 'push')
+    .addTransition('push', 'b', '', 'trb', 'push')
     .addTransition('push', 'a', 'y', '', 'popped_y')
     .addTransition('popped_y', '', 'z', '', 'popped_z')
     .addTransition('popped_z', '', 'a', '', 'pop')
